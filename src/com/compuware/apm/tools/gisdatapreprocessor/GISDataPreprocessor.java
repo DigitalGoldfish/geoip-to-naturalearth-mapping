@@ -508,10 +508,11 @@ public class GISDataPreprocessor {
 		manualMappingOfRegionIdsToAdm1Ids.put("BG-43", new String[] {"BGR-2232"}); // Khaskovo
 		remappedRegionIds.put("BG-33", "BG-47"); // Mikhaylovgrad
 		manualMappingOfRegionIdsToAdm1Ids.put("BG-39", new String[] {"BGR-2254"}); // Burgas
+		manualMappingOfRegionIdsToAdm1Ids.put("BG-61", new String[] {"BGR-2260"}); // Varna
 
 		// Slovenia
 		manualMappingOfRegionIdsToAdm1Ids.put("SI-D8", new String[] { "SVN-1022" }); // Ajdovscina Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-D8", new String[] { "SVN-1000" }); // Velike Lasce Commune
+		// manualMappingOfRegionIdsToAdm1Ids.put("SI-D8", new String[] { "SVN-1000" }); // Velike Lasce Commune
 		manualMappingOfRegionIdsToAdm1Ids.put("SI-D4", new String[] { "SVN-999"  }); // Trebnje Commune
 		manualMappingOfRegionIdsToAdm1Ids.put("SI-D1", new String[] { "SVN-1048" });// Sveti Jurij Commune
 		manualMappingOfRegionIdsToAdm1Ids.put("SI-L9", new String[] { "SVN-961"  }); // Smartno pri Litiji Commune
@@ -535,6 +536,7 @@ public class GISDataPreprocessor {
 		remappedRegionIds.put("SI-88","SI-H9"); // Osilnica Commune is part of Kostel in natural earth data
 		remappedRegionIds.put("SI-N9","SI-29"); // Apace Commune in NE part of Gronja Radgona
 		remappedRegionIds.put("SI-M6","SI-F8"); // Tisina Commune partof Cankova on natrual eart data
+		manualMappingOfRegionIdsToAdm1Ids.put("SI-O1", new String[] { "SVN-1041"}); // Cirkulane Commune
 
 		// Switzerland
 		manualMappingOfRegionIdsToAdm1Ids.put("CH-03", new String[] { "CHE-3423" });// Basel-Landschaft
@@ -545,6 +547,12 @@ public class GISDataPreprocessor {
 		manualMappingOfRegionIdsToAdm1Ids.put("CH-13", new String[] { "CHE-164"  });  //  Nidwalden
 		manualMappingOfRegionIdsToAdm1Ids.put("CH-14", new String[] { "CHE-3427" }); //  Obwalden
 		manualMappingOfRegionIdsToAdm1Ids.put("CH-16", new String[] { "CHE-171", "CHE-172"  }); //  Schaffhausen
+
+		// Albania
+		manualMappingOfRegionIdsToAdm1Ids.put("AL-42", new String[] { "ALB-1494" }); // Durres
+		manualMappingOfRegionIdsToAdm1Ids.put("AL-47", new String[] { "ALB-1502" }); // Kukes
+		manualMappingOfRegionIdsToAdm1Ids.put("AL-49", new String[] { "ALB-1498" }); // Shkoder
+		manualMappingOfRegionIdsToAdm1Ids.put("AL-50", new String[] { "ALB-1529" }); // Tirane
 
 		// Greece
 		// TODO: create regions
@@ -748,14 +756,19 @@ public class GISDataPreprocessor {
 		manualMappingOfRegionIdsToAdm1Ids.put("EC-24", new String[] {"ECU-1286"}); // Orellona
 
 		// Sudan
-		manualMappingOfRegionIdsToAdm1Ids.put("SD-27", new String[] {"SDN-880"}); // Al Wusta
-		manualMappingOfRegionIdsToAdm1Ids.put("SD-28", new String[] {"SDN-1286"}); // Al Istiwa'iyah
+		manualMappingOfRegionIdsToAdm1Ids.put("SD-27", new String[] {"SDN-880", "SDN-875", "SDN-879"}); // Al Wusta
 		manualMappingOfRegionIdsToAdm1Ids.put("SD-30", new String[] {"SDN-878"}); // Ash Shamaliyah
-		manualMappingOfRegionIdsToAdm1Ids.put("SD-31", new String[] {"SDN-1286"}); // Ash Sharqiyah
-		manualMappingOfRegionIdsToAdm1Ids.put("SD-32", new String[] {"SDN-1286"}); // Bahr al Ghazal
+		manualMappingOfRegionIdsToAdm1Ids.put("SD-32", new String[] {"SDN-872","SDN-873", "SDN-147"}); // Bahr al Ghazal
 		manualMappingOfRegionIdsToAdm1Ids.put("SD-33", new String[] {"SDN-881", "SDN-811", "SDN-797"}); // Darfur
-		manualMappingOfRegionIdsToAdm1Ids.put("SD-34", new String[] {"SDN-1286"}); // Kurdufan
-		manualMappingOfRegionIdsToAdm1Ids.put("SD-44", new String[] {"SDN-1286"}); // Central Equatoria State
+		manualMappingOfRegionIdsToAdm1Ids.put("SD-34", new String[] {"SDN-882", "SDN-883"}); // Kurdufan
+		manualMappingOfRegionIdsToAdm1Ids.put("SD-29", new String[] {"SDN-874"}); // Al Khartum
+
+		// South Sudan
+		manualMappingOfRegionIdsToAdm1Ids.put("SD-44", new String[] {"SDS-865"}); // Central Equatoria State
+		manualMappingOfRegionIdsToAdm1Ids.put("SD-28", new String[] {"SDS-892", "SDS-864"}); // Al Istiwa'iyah
+		manualMappingOfRegionIdsToAdm1Ids.put("SD-31", new String[] {"SDS-876", "SDS-884", "SDS-149", "SDN-863"}); // Ash Sharqiyah
+		manualMappingOfRegionIdsToAdm1Ids.put("SD-40", new String[] {"SDS-871"}); // Al Wahadah State
+		manualMappingOfRegionIdsToAdm1Ids.put("SD-35", new String[] {"SDS-869", "SDS-870"}); // Upper Nile
 
 		// Panama
 		manualMappingOfRegionIdsToAdm1Ids.put("PA-01", new String[] {"PAN-1958"}); // Panama - Bocas del Toro
@@ -792,6 +805,15 @@ public class GISDataPreprocessor {
 		// unmappableRegions.add("NI-15"); // Rio San Juan (together with Rivas mappend as "nicaragua" (NIC-24)
 		// unmappableRegions.add("NI-14"); // Rivas
 		unmappableRegions.add("NI-16"); // Zelaya - not to be found on any map
+
+		// Andorra
+		unmappableRegions.add("AD-02"); // Canillo
+		unmappableRegions.add("AD-03"); // Encam
+		unmappableRegions.add("AD-04"); // La Massana
+		unmappableRegions.add("AD-05"); // Ordino
+		unmappableRegions.add("AD-06"); // Sant Julia de Loria
+		unmappableRegions.add("AD-07"); // Andorra la Vella
+		unmappableRegions.add("AD-08"); // Escaldes-Engordany
 
 		// Kirgistan
 		manualMappingOfRegionIdsToAdm1Ids.put("KG-01", new String[] {"KGZ-1115"}); // Bishkek
@@ -834,7 +856,7 @@ public class GISDataPreprocessor {
 		manualMappingOfRegionIdsToAdm1Ids.put("RU-93", new String[] { "RUS-2610" });// Zabaykal'skiy Kray
 		remappedRegionIds.put("RU-90", "RU-58");
 		manualMappingOfRegionIdsToAdm1Ids.put("RU-92", new String[] { "RUS-3468" });// Kamchatskiy Kray
-		manualMappingOfRegionIdsToAdm1Ids.put("RU-48", new String[] { "RUS-2365" });// Moscow City
+		manualMappingOfRegionIdsToAdm1Ids.put("RU-47", new String[] { "RUS-2365" });// Moskwa
 		manualMappingOfRegionIdsToAdm1Ids.put("RU-49", new String[] { "RUS-2333", "RUS-282" });// Murmansk
 		manualMappingOfRegionIdsToAdm1Ids.put("RU-58", new String[] { "RUS-3200" });// Perm
 		manualMappingOfRegionIdsToAdm1Ids.put("RU-52", new String[] { "RUS-2334" });// Novgorod
@@ -843,6 +865,7 @@ public class GISDataPreprocessor {
 		remappedRegionIds.put("RU-36","RU-26");
 		manualMappingOfRegionIdsToAdm1Ids.put("RU-19", new String[] { "RUS-2303" }); // Ingush
 		manualMappingOfRegionIdsToAdm1Ids.put("RU-06", new String[] { "RUS-2354" }); // Arkhangel'sk
+		remappedRegionIds.put("RU-48", "RU-47");
 
 		// Japan
 		manualMappingOfRegionIdsToAdm1Ids.put("JP-06", new String[] {"JPN-1848"}); // Fukui
