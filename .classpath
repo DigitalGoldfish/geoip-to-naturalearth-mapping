@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/gt-cql-9.3.jar"/>
+	<classpathentry kind="lib" path="lib/gt-data-9.3.jar"/>
+	<classpathentry kind="lib" path="lib/gt-geojson-9.3.jar"/>
+	<classpathentry kind="lib" path="lib/gt-shapefile-ng-9.3.jar"/>
+	<classpathentry kind="lib" path="lib/gt-api-9.3.jar"/>
+	<classpathentry kind="lib" path="lib/gt-main-9.3.jar"/>
+	<classpathentry kind="lib" path="lib/gt-opengis-9.3.jar"/>
+	<classpathentry kind="lib" path="lib/gt-metadata-9.3.jar"/>
+	<classpathentry kind="lib" path="lib/jts-1.13.jar"/>
+	<classpathentry kind="lib" path="lib/gt-referencing-9.3.jar"/>
+	<classpathentry kind="lib" path="lib/jsr-275-1.0-beta-2.jar"/>
+	<classpathentry kind="lib" path="lib/json-simple-1.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
