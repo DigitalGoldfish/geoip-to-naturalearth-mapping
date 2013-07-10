@@ -102,7 +102,7 @@ public class ShapeSimplificationTest {
 			collection.add(createSimpleFeature(feature));
 		}
 
-		DefaultFeatureCollection simplifiedFeatures = PolygonBorderPreservingSimplifier.simplify(collection, 0.1, true);
+		DefaultFeatureCollection simplifiedFeatures = PolygonBorderPreservingSimplifier.simplify(collection, 0.01, true);
 		return simplifiedFeatures;
 		// i = 0;
 		/* for (SimpleFeature feature: features) {
@@ -164,7 +164,7 @@ public class ShapeSimplificationTest {
 
 	private static void generateGeoJSONFile(String filename, DefaultFeatureCollection features) throws IOException
 	{
-		FeatureJSON feature = new FeatureJSON(new GeometryJSON(2));
+		FeatureJSON feature = new FeatureJSON(new GeometryJSON(4));
 		FileWriter writer = new FileWriter("out/" + filename + ".json");
 		feature.writeFeatureCollection(features, writer);
 	}

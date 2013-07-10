@@ -16,7 +16,7 @@ public class ShapeSimplifierTest extends PolygonBorderPreservingSimplifier {
 	@Test
 	public void testPointToString() {
 		Point p = new Point();
-		String stringRepresentation = PolygonBorderPreservingSimplifier.pointToString(p);
+		String stringRepresentation = PolygonBorderPreservingSimplifier.generateStringIdForPoint(p);
 	}
 
 
