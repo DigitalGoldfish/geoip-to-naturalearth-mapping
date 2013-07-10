@@ -180,7 +180,6 @@ public class ShapeSimplificationTest {
 		GeometryCollection geometryCollection = (GeometryCollection) factory.buildGeometry(geoCollection);
 
 		return geometryCollection.union().buffer(0);
-
 	}
 
 

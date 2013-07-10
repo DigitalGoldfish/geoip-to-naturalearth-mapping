@@ -172,6 +172,14 @@ public class PolygonBorderPreservingSimplifier
 	{
 		this.features = features;
 		this.geometryFactory = new GeometryFactory(new PrecisionModel());
+
+		// To simplify the geometric shapes without loosing the borders we need
+		// the information for each point of every shape to how many other
+		// points it is connected to.  This method creates that info and stores
+		// it in the global map "connections".
+		// Since we do not allow to change the collection of features for one
+		// simplifier instance we can determine this in the constructor.
+		determineNumberOfConnectionsForEachPoint();
 	}
 
 	/**
@@ -188,6 +196,7 @@ public class PolygonBorderPreservingSimplifier
 
 	/**
 	 * Set if the topology should be preserved or not
+	 *
 	 * @param preserveTopology
 	 */
 	public void setPreserveTopology(boolean preserveTopology)
@@ -195,7 +204,21 @@ public class PolygonBorderPreservingSimplifier
 		this.preserveTopology = preserveTopology;
 	}
 
+	/**
+	 * Set the precision module to use for creating new Geometries. By default
+	 * the FLOATING precison model is used (full double precision floating point)
+	 *
+	 * @param model
+	 */
+	public void setPrecisionModel(PrecisionModel model) {
+		this.geometryFactory = new GeometryFactory(model);
+	}
 
+	/**
+	 * Creates and returns the simplified shapes.
+	 *
+	 * @return a copy of features with the simplified shape.
+	 */
 	public DefaultFeatureCollection getResultFeatureCollection()
 	{
 		this.simplifiedLines = new HashMap<String, LineString>();
@@ -204,19 +227,18 @@ public class PolygonBorderPreservingSimplifier
 		return simplify();
 	}
 
-	public void setPrecisionModel(PrecisionModel model) {
-		this.geometryFactory = new GeometryFactory(model);
-	}
 
+
+	/**
+	 * Simplifies the features that were passed to the constructor and returns
+	 * a DefaultFeatureCollection with copies of the original features.
+	 *
+	 * @return a collection of <code>SimpleFeature</code>
+	 */
 	protected DefaultFeatureCollection simplify()
 	{
-		// To simplify the geometric shapes without loosing the borders we need the information
-		// which points &line fragments are shared between two or more shapes. This method creates
-		// that info and stores it in the global map "connections".s
-		determineConnections(features);
-
-		// Create featureCollection to store copies of the features with simplified geometry
-		// (as we do not modify the input parameters)
+		// Create a new DefaultFeatureCollection to store the result (copies
+		// of the original features with simplified geometries).
 		DefaultFeatureCollection result = new DefaultFeatureCollection();
 
 		SimpleFeatureIterator featuresIterator = features.features();
@@ -226,106 +248,78 @@ public class PolygonBorderPreservingSimplifier
 
 				// get all polygons of the currently processed feature
 				List<Polygon> polygons = extractPolygons(feature);
-				List<Polygon> simplifiedPolygons = new ArrayList<Polygon>(polygons.size());
+				List<Polygon> simplifiedPolygons = new ArrayList<Polygon>(
+						polygons.size());
 
 				// iterate trough polygons of feature and simplify each polygon
+				// separately
 				for (Polygon polygon: polygons) {
+					// simplify polygon
 					Polygon simplifiedPolygon = simplifyPolygon(polygon);
 					if (simplifiedPolygon != null) {
 						simplifiedPolygons.add(simplifiedPolygon);
+					} else {
+						// TODO: remove this message after testing
+						System.out.println("Feature is ommited because it is too small!");
 					}
 				}
 
 				if (simplifiedPolygons.size() > 0) {
 					// create feature for simplified shape and append it to result
-					Polygon[] polys = new Polygon[(simplifiedPolygons.size())]; // TODO - find better name
-					for (int i = 0; i < simplifiedPolygons.size(); i++) {
-						polys[i] = simplifiedPolygons.get(i);
-					}
+					Polygon[] simplifiedPolygonsAsArray= simplifiedPolygons.toArray(
+							new Polygon[simplifiedPolygons.size()]);
 
-					MultiPolygon shape = geometryFactory.createMultiPolygon(polys);
+					// create new geometry - for simplicity we always use a multipolygon
+					// TODO: use Polygon if there is only one instance
+					MultiPolygon shape = geometryFactory.createMultiPolygon(
+							simplifiedPolygonsAsArray);
+
+					// clone simple feature and change geometry
 					SimpleFeature simplifiedFeature = cloneSimpleFeature(feature);
 					simplifiedFeature.setDefaultGeometry(shape);
 					result.add(simplifiedFeature);
 				} else {
-					// For this feature no shape is left after simplification (this can happen if topology isn't preserved).
+					// For this feature no shape is left after simplification
+					//  => this can happen if topology isn't preserved.
 					// In this case the feature is not included in the output.
+
+					// TODO: remove this message after testing
 					System.out.println("Feature is ommited because it is too small!");
 				}
 			}
 		} finally {
+			// NB: Iterators over features must always be manually closed,
+			// otherwise the memory isn't freed.
 			featuresIterator.close();
 		}
 
 		return result;
 	}
 
-	protected void determineConnections(DefaultFeatureCollection features) {
+	/**
+	 * Determines the number of connections for each point in any geometry in
+	 * the feature collection of this simplifier and stores it in the global
+	 * Map <code>numberOfConnectedPoints</code>.
+	 */
+	protected void determineNumberOfConnectionsForEachPoint() {
 		numberOfConnectedPoints = new HashMap<String, MutableInt>();
 
+		// extract all polygons from all features
 		List<Polygon> polygons = extractPolygons(features);
+
+		// iterate over all polygons and process them
 		for (Polygon polygon: polygons) {
+			// skip empty polygons (e.g. polgons with only 2 points)
 			if (polygon.getArea() > 0) {
 				analyzePointsOfPolygon(polygon);
 			} else {
+				// TODO: remove this once testing has shown that it works correctly
 				System.out.println("Polygon has an area 0; ignoring polygon");
 			}
 		}
 	}
 
-	/**
-	 * @param lines
-	 */
-	protected void analyzePointsOfPolygon(Polygon polygon)
-	{
-		List<LineString> lines = extractLinesFromPolygon(polygon);
-		for (LineString line: lines) {
-			// Now we iterate over all line segments (meaning each two neighbouring points)
-			// in the line and enter the connection between these two points in the list
-			// of connections.
-			//
-			// NOTE: We ignore the last point in the line since it is the same point
-			//       as the first one due to the  definition of a LinearRing in GeoTools
-			for (int i = 0; i < (line.getNumPoints() - 1); i++) {
 
-				int indexFrom = i;
-				Point pointFrom = line.getPointN(indexFrom);
-				String pointFromString = generateStringIdForPoint(pointFrom);
-
-				int indexTo = i + 1;
-				Point pointTo = line.getPointN(indexTo);
-				String pointToString = generateStringIdForPoint(pointTo);
-
-				// if the points are identical then skip them (precaution)
-				if (pointFromString.equals(pointToString)) {
-					continue;
-				}
-
-				// if no entry for this point in the connections map then create new entry
-				// with an empty list of connecting points
-				MutableInt counter = numberOfConnectedPoints.get(pointFromString);
-				if (counter == null) {
-					numberOfConnectedPoints.put(pointFromString, new MutableInt());
-				} else {
-					// increment the counter
-					counter.increment();
-				}
-
-				// if A is connected to B then B is also connected to a, therefore we
-				// also need to enter the reverse connection in the array of connections
-
-				// if no entry for this point in the connections map then create new entry
-				// with an empty list of connecting points
-				counter = numberOfConnectedPoints.get(pointToString);
-				if (counter == null) {
-					numberOfConnectedPoints.put(pointToString, new MutableInt());
-				} else {
-					// increment the counter
-					counter.increment();
-				}
-			}
-		}
-	}
 
 	protected Polygon simplifyPolygon(Polygon polygon)
 	{
@@ -434,7 +428,7 @@ public class PolygonBorderPreservingSimplifier
 					|| reorderedPoints.size() == i + 1) {
 
 				List<Point> pointsForLine = reorderedPoints.subList(iFrom, i + 1);
-				String lineKey = generateStringIdForPoint(pointsForLine.get(
+				String lineKey = generateStringIdForLine(pointsForLine.get(
 						pointsForLine.size() - 1),
 						pointsForLine.get(pointsForLine.size() - 2),
 						pointsForLine.get(0)
@@ -476,12 +470,74 @@ public class PolygonBorderPreservingSimplifier
 		return geometryFactory.createLineString(pointToCoordinates(simplifiedLinePoints));
 	}
 
-	protected static String buildLineKey(List<Point> points) {
-		return generateStringIdForPoint(points.get(0), points.get(1), points.get(points.size() - 1));
+
+	/**
+	 *
+	 *
+	 * @param lines
+	 */
+	protected void analyzePointsOfPolygon(Polygon polygon)
+	{
+		List<LineString> lines = extractLinesFromPolygon(polygon);
+		for (LineString line: lines) {
+			// Now we iterate over all line segments (meaning each two neighbouring points)
+			// in the line and enter the connection between these two points in the list
+			// of connections.
+			//
+			// NOTE: We ignore the last point in the line since it is the same point
+			//       as the first one due to the  definition of a LinearRing in GeoTools
+			for (int i = 0; i < (line.getNumPoints() - 1); i++) {
+
+				int indexFrom = i;
+				Point pointFrom = line.getPointN(indexFrom);
+				String pointFromString = generateStringIdForPoint(pointFrom);
+
+				int indexTo = i + 1;
+				Point pointTo = line.getPointN(indexTo);
+				String pointToString = generateStringIdForPoint(pointTo);
+
+				// if the points are identical then skip them (precaution)
+				if (pointFromString.equals(pointToString)) {
+					continue;
+				}
+
+				// if no entry for this point in the connections map then create new entry
+				// with an empty list of connecting points
+				MutableInt counter = numberOfConnectedPoints.get(pointFromString);
+				if (counter == null) {
+					numberOfConnectedPoints.put(pointFromString, new MutableInt());
+				} else {
+					// increment the counter
+					counter.increment();
+				}
+
+				// if A is connected to B then B is also connected to a, therefore we
+				// also need to enter the reverse connection in the array of connections
+
+				// if no entry for this point in the connections map then create new entry
+				// with an empty list of connecting points
+				counter = numberOfConnectedPoints.get(pointToString);
+				if (counter == null) {
+					numberOfConnectedPoints.put(pointToString, new MutableInt());
+				} else {
+					// increment the counter
+					counter.increment();
+				}
+			}
+		}
+	}
+
+	protected String buildLineKey(List<Point> points) {
+		return generateStringIdForLine(points.get(0), points.get(1), points.get(points.size() - 1));
 	}
 
 
-	protected static List<LineString> extractLinesFromPolygon(Polygon polygon)
+	/**
+	 *
+	 * @param polygon
+	 * @return
+	 */
+	protected List<LineString> extractLinesFromPolygon(Polygon polygon)
 	{
 		List<LineString> lines = new ArrayList<LineString>();
 		lines.add(polygon.getExteriorRing());
@@ -491,6 +547,13 @@ public class PolygonBorderPreservingSimplifier
 		return lines;
 	}
 
+	/**
+	 * Helper method that returns a list of polygons that contains all polygons
+	 * that are part of any geometry in the feature collection.
+	 *
+	 * @param features the collection from which polygons should be extracted.
+	 * @return
+	 */
 	protected List<Polygon> extractPolygons(DefaultFeatureCollection features)
 	{
 		SimpleFeatureIterator iterator = features.features();
@@ -498,26 +561,49 @@ public class PolygonBorderPreservingSimplifier
 		try {
 			while (iterator.hasNext()) {
 				SimpleFeature feature = iterator.next();
-				Geometry geometry = (Geometry) feature.getDefaultGeometry();
-				String geometryType = geometry.getGeometryType();
-				if (GEOMETRY_TYPE_MULTIPOLYGON.equals(geometryType) || GEOMETRY_TYPE_POLYGON.equals(geometryType)) {
-					result.addAll(extractPolygonsOfGeometry(geometry));
-				} else {
-					System.out.println("Unsupported Type:" + geometryType + " Ignoring Feature");
-				}
+				result.addAll(extractPolygons(feature));
 			}
 		} finally {
+			// NB: Iterators over features must always be manually closed,
+			// otherwise the memory isn't freed.
 			iterator.close();
 		}
 		return result;
 	}
 
+	/**
+	 * Helper method that returns all polygons of a single <code>SimpleFeature
+	 * </code> or an empty list if there are no polygons in the feature
+	 *
+	 * @param feature the feature from which to extract the polygoons
+	 * @return a <code>List</code> with 0 or more <code>Polygons</code>
+	 */
 	protected List<Polygon> extractPolygons(SimpleFeature feature)
 	{
-		return extractPolygonsOfGeometry((Geometry) feature.getDefaultGeometry());
+		// retrieve geometry of feature
+		Geometry geometry = (Geometry) feature.getDefaultGeometry();
+		String geometryType = geometry.getGeometryType();
+
+		// only process polygons and multipolygons, ignore all others
+		if (GEOMETRY_TYPE_MULTIPOLYGON.equals(geometryType)
+				|| GEOMETRY_TYPE_POLYGON.equals(geometryType)) {
+			return extractPolygonsOfGeometry(geometry);
+		}
+		// TODO: remove this after testing
+		System.out.println("Unsupported Type:" + geometryType + " Ignoring Feature");
+
+		return new ArrayList<Polygon>(0);
 	}
 
-	protected List<Polygon> extractPolygonsOfGeometry(Geometry geometry) {
+	/**
+	 *  Helper method that returns all polygons of a single <code>Geometry
+	 * </code> or an empty list if there are no polygons in the geometry.
+	 *
+	 * @param geometry
+	 * @return
+	 */
+	protected List<Polygon> extractPolygonsOfGeometry(Geometry geometry)
+	{
 		List<Polygon> polygons = new ArrayList<Polygon>();
 		if (GEOMETRY_TYPE_POLYGON.equals(geometry.getGeometryType())) {
 			polygons.add((Polygon) geometry);
@@ -525,31 +611,80 @@ public class PolygonBorderPreservingSimplifier
 			for (int i = 0; i < geometry.getNumGeometries(); i++) {
 				polygons.add((Polygon) geometry.getGeometryN(i));
 			}
+		} else {
+			// TODO: remove this after testing
+			System.out.println("Unsupported Type:" + geometry.getGeometryType()
+					+ " Ignoring Feature");
 		}
 		return polygons;
 	}
 
-	protected static String generateStringIdForLine(LineString line)
+	/**
+	 * Generates a string id for the line. The id of the line is defined as the
+	 * concatenated ids (@see generateStringIdForPoint) of the first point,
+	 * the second point and the last point of the line.
+	 * Since during processing we split lines in a way that they are are either
+	 * identical or share no segments the three points are enough to uniquely
+	 * identify each line segment we are going to process.
+	 *
+	 * @param line the line for which an id should be generated
+	 * @return the id for the line
+	 */
+	protected String generateStringIdForLine(LineString line)
 	{
-		return generateStringIdForPoint(line.getPointN(0), line.getPointN(1),
+		return generateStringIdForLine(line.getPointN(0), line.getPointN(1),
 				line.getPointN(line.getNumPoints() - 1));
 	}
 
-	protected static String generateStringIdForPoint(Point point1, Point point2,
-			Point point3)
+
+	/**
+	 * Generates a string id for the line. The id of the line is defined as the
+	 * concatenated ids (@see generateStringIdForPoint) of the first point,
+	 * the second point and the last point of the line.
+	 * Since during processing we split lines in a way that they are are either
+	 * identical or share no segments the three points are enough to uniquely
+	 * identify each line segment we are going to process.
+	 *
+	 * @param firstPoint the first point of the line
+	 * @param secondPoint the second point of the line
+	 * @param endPoint the end point of the line
+	 * @return the id for the line
+	 */
+	protected String generateStringIdForLine(Point firstPoint,
+			Point secondPoint, Point endPoint)
 	{
-		return generateStringIdForPoint(point1) + " "
-				+ generateStringIdForPoint(point2) + " "
-				+ generateStringIdForPoint(point3);
+		return generateStringIdForPoint(firstPoint) + " "
+				+ generateStringIdForPoint(secondPoint) + " "
+				+ generateStringIdForPoint(endPoint);
 	}
 
-	protected static String generateStringIdForPoint(Point p)
+	/**
+	 * Generates a string based id that is used to identify points. As the id
+	 * is identical for points with the same (or very close coordinates) it can
+	 * be used to identify points that should be treated as one during the
+	 * simplification.
+	 *
+	 * The id lookes like 12.01234567 12.01234567 with the first number being
+	 * the x coordinate and the second number the y coordinate. There are always
+	 * KEY_PRECISION (global constant) decimal places.
+	 *
+	 * @param point the point for which the id should be generated
+	 * @return a string representation of the point
+	 */
+	protected String generateStringIdForPoint(Point point)
 	{
-		return String.format("%." + KEY_PRECISION + "f %." + KEY_PRECISION + "f", p.getX(), p.getY());
+		return String.format("%." + KEY_PRECISION + "f %." + KEY_PRECISION + "f",
+				point.getX(), point.getY());
 	}
 
 
-	protected static Coordinate[] pointToCoordinates(List<Point> points) {
+	/**
+	 * Transforms a list of points into an array of coordinates
+	 *
+	 * @param points a list of <code>Point</code> objects
+	 * @return the points as an array of <code>Coorinddate</code> objects
+	 */
+	protected Coordinate[] pointToCoordinates(List<Point> points) {
 		Coordinate[] coordinates = new Coordinate[points.size()];
 		int i = 0;
 		for (Point point: points) {
@@ -559,9 +694,9 @@ public class PolygonBorderPreservingSimplifier
 	}
 
 	/**
+	 * Clone simple feature
 	 *
-	 *
-	 * @param original
+	 * @param original the original from which a copy is returned.
 	 * @return a shallow copy of the feature given as input
 	 *
 	 * TODO: should we use deep copy here ??
@@ -579,10 +714,12 @@ public class PolygonBorderPreservingSimplifier
 
 
 	/**
-	 * Small helper utility class to simplify counting with the counters stored in a hashmap.
-	 * Reduces object churn when used instead of immutable integers
+	 * Small utility class to implement an efficient way to increment values
+	 * stored in a map. Reduces object churn in comparison to the use of immutable
+	 * integers.
 	 *
-	 * see http://stackoverflow.com/questions/81346/most-efficient-way-to-increment-a-map-value-in-java
+	 * see http://stackoverflow.com/questions/81346
+	 * 				/most-efficient-way-to-increment-a-map-value-in-java
 	 */
 	class MutableInt {
 		private int value = 1; // note that we start at 1 since we're counting
