@@ -286,7 +286,9 @@ public class ShapeFileFixer {
 		String isoCountryCode = retypedFeature.getAttribute("iso_a2").toString();
 		String admin1Code = retypedFeature.getAttribute("adm1_code").toString();
 
-		if (MaxmindSpecialCaseThreatment.regionsThatAreIgnored.contains(admin1Code)) {
+		if ("GB".equals(isoCountryCode)) {
+			fixupFeatureByAlternativeFips(retypedFeature);
+		} else if (MaxmindSpecialCaseThreatment.regionsThatAreIgnored.contains(admin1Code)) {
 			fixupIgnoredRegion(retypedFeature);
 		} else if (MaxmindSpecialCaseThreatment.staticMappingsFromAdmin1CodeToMaxMindCode.containsKey(admin1Code)) {
 			fixupRegionWithStaticOverride(retypedFeature);
@@ -319,6 +321,21 @@ public class ShapeFileFixer {
 			System.out.println("Found no region altough override code was specified for " + admin1Code);
 		}
 
+	}
+
+	private static void fixupFeatureByAlternativeFips(SimpleFeature feature) {
+		String alternativeFips = feature.getAttribute("fips_alt").toString();
+		// TODO: add check for duplicates
+		if (maxmindRegionsByFIPSCode.get(alternativeFips) != null) {
+			Region region = maxmindRegionsByFIPSCode.get(alternativeFips);
+			if (region != null) {
+				feature.setAttribute("geoip_code", region.getCode());
+				feature.setAttribute("geoip_name", region.getName());
+				feature.setAttribute("geoip_alg", "Fixed using alternative FIPS Code!");
+				feature.setAttribute("fips", alternativeFips);
+				unassignedMaxmindRegions.remove(region.getCode());
+			}
+		}
 	}
 
 	private static void fixupNaturalEarthFipsCode(SimpleFeature feature) {

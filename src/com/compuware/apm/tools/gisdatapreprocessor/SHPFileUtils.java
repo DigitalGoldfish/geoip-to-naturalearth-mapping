@@ -59,26 +59,26 @@ public class SHPFileUtils {
 			final ShapefileDataStore newDataStore)
 					throws IOException
 	{
-			Transaction transaction = new DefaultTransaction("create");
-			String typeName = newDataStore.getTypeNames()[0];
-			SimpleFeatureSource featureSource = newDataStore.getFeatureSource(typeName);
+		Transaction transaction = new DefaultTransaction("create");
+		String typeName = newDataStore.getTypeNames()[0];
+		SimpleFeatureSource featureSource = newDataStore.getFeatureSource(typeName);
 
-			if (featureSource instanceof SimpleFeatureStore) {
-				SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
-				try {
-					featureStore.setTransaction(transaction);
-					featureStore.addFeatures(result);
-					transaction.commit();
-				} catch (Exception e) {
-					e.printStackTrace();
-					transaction.rollback();
-				} finally {
-					transaction.close();
-				}
-			} else {
-				System.out.println(typeName + " does not support read/write access.");
-				System.exit(1);
+		if (featureSource instanceof SimpleFeatureStore) {
+			SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
+			try {
+				featureStore.setTransaction(transaction);
+				featureStore.addFeatures(result);
+				transaction.commit();
+			} catch (Exception e) {
+				e.printStackTrace();
+				transaction.rollback();
+			} finally {
+				transaction.close();
 			}
+		} else {
+			System.out.println(typeName + " does not support read/write access.");
+			System.exit(1);
 		}
+	}
 
 }
