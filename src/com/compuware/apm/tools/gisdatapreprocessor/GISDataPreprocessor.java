@@ -420,194 +420,6 @@ public class GISDataPreprocessor {
 		remappedRegionIds.put("MY-17", "MY-12");
 		remappedRegionIds.put("MY-14", "MY-05");
 
-		// Spain
-		manualMappingOfRegionIdsToAdm1Ids.put("ES-32", new String[] {"ESP-3411"});  // Navarra
-		manualMappingOfRegionIdsToAdm1Ids.put("ES-39", new String[] {"ESP-83"});  // Cantabria
-		manualMappingOfRegionIdsToAdm1Ids.put("ES-52", new String[] {"ESP-3410"});  // Aragon
-		manualMappingOfRegionIdsToAdm1Ids.put("ES-53", new String[] {"ESP+00?"});  // Canarias
-
-		// Dönemark
-		manualMappingOfRegionIdsToAdm1Ids.put("DK-20", new String[] {"DNK-3420"});// Sjelland
-
-		// Finland
-		manualMappingOfRegionIdsToAdm1Ids.put("FI-13", new String[] {"FIN-3187", "FIN-3194"});  // Southern Finland
-		manualMappingOfRegionIdsToAdm1Ids.put("FI-15", new String[] {"FIN-3182"});  // Western Finland
-
-		// Italy
-		manualMappingOfRegionIdsToAdm1Ids.put("IT-12", new String[] {"ITA-904"});  // Piemonte
-		manualMappingOfRegionIdsToAdm1Ids.put("IT-19", new String[] {"ITA-822"});  // Puglia
-
-		// Monaco
-		manualMappingOfRegionIdsToAdm1Ids.put("MC-02", new String[] {"MCO+00?"});  // Monaco
-		remappedRegionIds.put("MC-01", "MC-02"); // La Condamine
-		remappedRegionIds.put("MC-03", "MC-02"); // Monte-Carlo
-
-		// Czech
-		manualMappingOfRegionIdsToAdm1Ids.put("CZ-84", new String[] {"CZE-10372"}); // Olomoucky kraj
-		manualMappingOfRegionIdsToAdm1Ids.put("CZ-86", new String[] {"CZE-10373"}); // Pardubicky kraj
-		manualMappingOfRegionIdsToAdm1Ids.put("CZ-87", new String[] {"CZE-10369"}); // Plzensky kraj
-		manualMappingOfRegionIdsToAdm1Ids.put("CZ-88", new String[] {"CZE-1596"}); // Stredocesky kraj
-		manualMappingOfRegionIdsToAdm1Ids.put("CZ-89", new String[] {"CZE-10368"}); // Ustecky kraj
-		manualMappingOfRegionIdsToAdm1Ids.put("CZ-90", new String[] {"CZE-10371"}); // Zlinsky kraj
-		manualMappingOfRegionIdsToAdm1Ids.put("CZ-52", new String[] {"CZE-1595"}); // Hlavni mesto Praha
-
-		// Germany
-		manualMappingOfRegionIdsToAdm1Ids.put("DE-15", new String[] {"DEU-1577"}); // Thuringen
-
-		// Sweden
-		manualMappingOfRegionIdsToAdm1Ids.put("SE-18", new String[] {"SWE-185"}); // Sodermanlands Lan
-		manualMappingOfRegionIdsToAdm1Ids.put("SE-28", new String[] {"SWE-3428"}); // Vastra Gotaland
-
-		// Island
-		manualMappingOfRegionIdsToAdm1Ids.put("IS-03", new String[] {"ISL-703"}); // Arnessysla
-		manualMappingOfRegionIdsToAdm1Ids.put("IS-23", new String[] {"ISL-705"}); // Rangarvallasysla
-		manualMappingOfRegionIdsToAdm1Ids.put("IS-30", new String[] {"ISL-690"}); // Strandasysla
-		manualMappingOfRegionIdsToAdm1Ids.put("IS-39", new String[] {"ISL-709"}); // Hofuoborgarsvaoio
-		manualMappingOfRegionIdsToAdm1Ids.put("IS-40", new String[] {"ISL-702"}); // Norourland Eystra
-		manualMappingOfRegionIdsToAdm1Ids.put("IS-41", new String[] {"ISL-697"}); // Norourland Vestra
-		manualMappingOfRegionIdsToAdm1Ids.put("IS-42", new String[] {"ISL-705"}); // Suourland
-		manualMappingOfRegionIdsToAdm1Ids.put("IS-43", new String[] {"ISL-704"}); // Suournes
-		manualMappingOfRegionIdsToAdm1Ids.put("IS-44", new String[] {"ISL-690"}); // Vestfiroir
-
-		// Bosnia
-		manualMappingOfRegionIdsToAdm1Ids.put("BA-01", new String[] {"BIH-2889"});// Federation of Bosnia and Herzegovina
-		manualMappingOfRegionIdsToAdm1Ids.put("BA-02", new String[] {"BIH-2888"}); // Republika Srpska
-
-		// Republic of Serbia
-		manualMappingOfRegionIdsToAdm1Ids.put("RS-01", new String[] {"KOS-1522", "KOS-1527", "KOS-828", "KOS-840", "KOS-842" }); // Kosovo
-		manualMappingOfRegionIdsToAdm1Ids.put("RS-02", new String[] {"SRB-281", "SRB-1060", "SRB-1061", "SRB-1059", "SRB-275", "SRB-274", "SRB-273" }); // Vojvodina
-
-		// Belgium
-		unmappableRegions.add("BE-13"); // Belgium
-		unmappableRegions.add("BE-14"); // Wallonia
-
-		// Rumania
-		manualMappingOfRegionIdsToAdm1Ids.put("RO-12", new String[] {"ROU-278"});// Caras-Severin
-		manualMappingOfRegionIdsToAdm1Ids.put("RO-41", new String[] {"ROU-317"});// Vrancea
-		manualMappingOfRegionIdsToAdm1Ids.put("RO-43", new String[] {"ROU-128"});// Ilfov
-		// manualMappingOfRegionIdsToAdm1Ids.put("RO-37", new String[] {"ROU-128"});//
-		remappedRegionIds.put("RO-37", "RO-14"); // natural earth data is wrong and only shows constantja where tulcea should be
-		manualMappingOfRegionIdsToAdm1Ids.put("RO-26", new String[] {"ROU-124"});// Mehedinti
-
-		// France
-		manualMappingOfRegionIdsToAdm1Ids.put("FR-B8", new String[] {"FRA-2667"}); // Provence-Alpes-Cote d'Azur
-		manualMappingOfRegionIdsToAdm1Ids.put("FR-B3", new String[] {"FRA-2669"}); // Midi-Pyrenees
-		manualMappingOfRegionIdsToAdm1Ids.put("FR-A6", new String[] {"FRA-2685"}); // Franche-Comte
-		manualMappingOfRegionIdsToAdm1Ids.put("FR-A8", new String[] {"FRA-2680"}); // Ile-de-France
-
-		// Portugal
-		remappedRegionIds.put("PT-19", "PT-14" ); // Setubal => Lisboa
-
-		// Bulgaria
-		manualMappingOfRegionIdsToAdm1Ids.put("BG-52", new String[] {"BGR-2256"}); // Razgrad
-		manualMappingOfRegionIdsToAdm1Ids.put("BG-51", new String[] {"BGR-2235"}); // Plovdiv
-		manualMappingOfRegionIdsToAdm1Ids.put("BG-56", new String[] {"BGR-2231"}); // Sliven
-		manualMappingOfRegionIdsToAdm1Ids.put("BG-46", new String[] {"BGR-2247"}); // Lovech
-		manualMappingOfRegionIdsToAdm1Ids.put("BG-47", new String[] {"BGR-2250"}); // Montana
-		manualMappingOfRegionIdsToAdm1Ids.put("BG-42", new String[] {"BGR-2244"}); // Grad Sofiya
-		manualMappingOfRegionIdsToAdm1Ids.put("BG-43", new String[] {"BGR-2232"}); // Khaskovo
-		remappedRegionIds.put("BG-33", "BG-47"); // Mikhaylovgrad
-		manualMappingOfRegionIdsToAdm1Ids.put("BG-39", new String[] {"BGR-2254"}); // Burgas
-		manualMappingOfRegionIdsToAdm1Ids.put("BG-61", new String[] {"BGR-2260"}); // Varna
-
-		// Slovenia
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-D8", new String[] { "SVN-1022" }); // Ajdovscina Commune
-		// manualMappingOfRegionIdsToAdm1Ids.put("SI-D8", new String[] { "SVN-1000" }); // Velike Lasce Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-D4", new String[] { "SVN-999"  }); // Trebnje Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-D1", new String[] { "SVN-1048" });// Sveti Jurij Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-L9", new String[] { "SVN-961"  }); // Smartno pri Litiji Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-D3", new String[] { "SVN-952", "SVN-998" });// Trbovlje Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-E7", new String[] { "SVN-1006", "SVN-952" }); // Zagorje ob Savi Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-C9", new String[] { "SVN-997"  }); // Store Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-H7", new String[] { "SVN-246", "SVN-207" });// Kocevje Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-G6", new String[] { "SVN-249"  }); // Dolenjske Toplice Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-17", new String[] { "SVN-209"  }); // Loska Dolina Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-04", new String[] { "SVN-1009" }); // Bohinj Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-24", new String[] { "SVN-1040" }); // Dornava Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-06", new String[] { "SVN-1023" }); // Bovec Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-07", new String[] { "SVN-1024" }); // Brda Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-08", new String[] { "SVN-938"  });  // Brezice Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-42", new String[] { "SVN-1042" }); // Jursinci Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-31", new String[] { "SVN-928", "SVN-929" }); // Gornji Petrovci Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-32", new String[] { "SVN-950"  }); // Grosuplje Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-34", new String[] { "SVN-951"  });  // Hrastnik Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-97", new String[] { "SVN-929"  });  // Puconci Commune
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-62", new String[] { "SVN-963"  });  // Ljubno Commune
-		remappedRegionIds.put("SI-88","SI-H9"); // Osilnica Commune is part of Kostel in natural earth data
-		remappedRegionIds.put("SI-N9","SI-29"); // Apace Commune in NE part of Gronja Radgona
-		remappedRegionIds.put("SI-M6","SI-F8"); // Tisina Commune partof Cankova on natrual eart data
-		manualMappingOfRegionIdsToAdm1Ids.put("SI-O1", new String[] { "SVN-1041"}); // Cirkulane Commune
-
-		// Switzerland
-		manualMappingOfRegionIdsToAdm1Ids.put("CH-03", new String[] { "CHE-3423" });// Basel-Landschaft
-		manualMappingOfRegionIdsToAdm1Ids.put("CH-04", new String[] { "CHE-3425" }); //  Basel-Stadt
-		manualMappingOfRegionIdsToAdm1Ids.put("CH-05", new String[] { "CHE-3424" }); //  Bern
-		manualMappingOfRegionIdsToAdm1Ids.put("CH-06", new String[] { "CHE-3421" }); //  Fribourg
-		manualMappingOfRegionIdsToAdm1Ids.put("CH-11", new String[] { "CHE-163"  });  //  Luzern
-		manualMappingOfRegionIdsToAdm1Ids.put("CH-13", new String[] { "CHE-164"  });  //  Nidwalden
-		manualMappingOfRegionIdsToAdm1Ids.put("CH-14", new String[] { "CHE-3427" }); //  Obwalden
-		manualMappingOfRegionIdsToAdm1Ids.put("CH-16", new String[] { "CHE-171", "CHE-172"  }); //  Schaffhausen
-
-		// Albania
-		manualMappingOfRegionIdsToAdm1Ids.put("AL-42", new String[] { "ALB-1494" }); // Durres
-		manualMappingOfRegionIdsToAdm1Ids.put("AL-47", new String[] { "ALB-1502" }); // Kukes
-		manualMappingOfRegionIdsToAdm1Ids.put("AL-49", new String[] { "ALB-1498" }); // Shkoder
-		manualMappingOfRegionIdsToAdm1Ids.put("AL-50", new String[] { "ALB-1529" }); // Tirane
-
-		// Greece
-		// TODO: create regions
-		remappedRegionIds.put("GR-01", "GR-MT"); // Evros
-		remappedRegionIds.put("GR-02", "GR-MT"); // Rodhopi
-		remappedRegionIds.put("GR-03", "GR-MT"); // Xanthi
-		remappedRegionIds.put("GR-04", "GR-MT"); // Drama
-		remappedRegionIds.put("GR-05", "GR-MC"); // Serrai
-		remappedRegionIds.put("GR-06", "GR-MC"); // Kilkis
-		remappedRegionIds.put("GR-07", "GR-MC"); // Pella
-		remappedRegionIds.put("GR-08", "GR-MW"); // Florina
-		remappedRegionIds.put("GR-09", "GR-MW"); // Kastoria
-		remappedRegionIds.put("GR-10", "GR-MW"); // Grevena
-		remappedRegionIds.put("GR-11", "GR-MW"); // Kozani
-		remappedRegionIds.put("GR-12", "GR-MC"); // Imathia
-		remappedRegionIds.put("GR-13", "GR-MC"); // Thessaloniki
-		remappedRegionIds.put("GR-14", "GR-MT"); // Kavala
-		remappedRegionIds.put("GR-15", "GR-MC"); // Khalkidhiki
-		remappedRegionIds.put("GR-16", "GR-MC"); // Pieria
-		remappedRegionIds.put("GR-17", "GR-EP"); // Ioannina
-		remappedRegionIds.put("GR-18", "GR-EP"); // Thesprotia
-		remappedRegionIds.put("GR-19", "GR-EP"); // Preveza
-		remappedRegionIds.put("GR-20", "GR-EP"); // Arta
-		remappedRegionIds.put("GR-21", "GR-TS"); // Larisa
-		remappedRegionIds.put("GR-22", "GR-TS"); // Trikala
-		remappedRegionIds.put("GR-23", "GR-TS"); // Kardhitsa
-		remappedRegionIds.put("GR-24", "GR-TS"); // Magnisia
-		remappedRegionIds.put("GR-25", "GR-II"); // Kerkira
-		remappedRegionIds.put("GR-26", "GR-II"); // Levkas
-		remappedRegionIds.put("GR-27", "GR-II"); // Kefallinia
-		remappedRegionIds.put("GR-28", "GR-II"); // Zakinthos
-		remappedRegionIds.put("GR-29", "GR-GC"); // Fthiotis
-		remappedRegionIds.put("GR-30", "GR-GC"); // Evritania
-		remappedRegionIds.put("GR-31", "GR-GW"); // Aitolia kai Akarnania
-		remappedRegionIds.put("GR-32", "GR-GC"); // Fokis
-		remappedRegionIds.put("GR-33", "GR-GC"); // Voiotia
-		remappedRegionIds.put("GR-34", "GR-GC"); // Evvoia
-		remappedRegionIds.put("GR-35", "GR-AT"); // Attiki
-		remappedRegionIds.put("GR-36", "GR-PP"); // Argolis
-		remappedRegionIds.put("GR-37", "GR-PP"); // Korinthia
-		remappedRegionIds.put("GR-38", "GR-GW"); // Akhaia
-		remappedRegionIds.put("GR-39", "GR-GW"); // Ilia
-		remappedRegionIds.put("GR-40", "GR-PP"); // Messinia
-		remappedRegionIds.put("GR-41", "GR-PP"); // Arkadhia
-		remappedRegionIds.put("GR-42", "GR-PP"); // Lakonia
-		remappedRegionIds.put("GR-43", "GR-CR"); // Khania
-		remappedRegionIds.put("GR-44", "GR-CR"); // Rethimni
-		remappedRegionIds.put("GR-45", "GR-CR"); // Iraklion
-		remappedRegionIds.put("GR-46", "GR-CR"); // Lasithi
-		remappedRegionIds.put("GR-47", "GR-GC"); // Dhodhekanisos
-		remappedRegionIds.put("GR-48", "GR-AN"); // Samos
-		remappedRegionIds.put("GR-49", "GR-AS"); // Kikladhes
-		remappedRegionIds.put("GR-50", "GR-AN"); // Khios
-		remappedRegionIds.put("GR-51", "GR-AN"); // Lesvos
-
 		// Vietnam
 		manualMappingOfRegionIdsToAdm1Ids.put("VN-72", new String[] {"VNM-470"});  // Bac Kan
 		manualMappingOfRegionIdsToAdm1Ids.put("VN-81", new String[] {"VNM-461"});  // Hung Yen
@@ -756,19 +568,14 @@ public class GISDataPreprocessor {
 		manualMappingOfRegionIdsToAdm1Ids.put("EC-24", new String[] {"ECU-1286"}); // Orellona
 
 		// Sudan
-		manualMappingOfRegionIdsToAdm1Ids.put("SD-27", new String[] {"SDN-880", "SDN-875", "SDN-879"}); // Al Wusta
+		manualMappingOfRegionIdsToAdm1Ids.put("SD-27", new String[] {"SDN-880"}); // Al Wusta
+		manualMappingOfRegionIdsToAdm1Ids.put("SD-28", new String[] {"SDN-1286"}); // Al Istiwa'iyah
 		manualMappingOfRegionIdsToAdm1Ids.put("SD-30", new String[] {"SDN-878"}); // Ash Shamaliyah
-		manualMappingOfRegionIdsToAdm1Ids.put("SD-32", new String[] {"SDN-872","SDN-873", "SDN-147"}); // Bahr al Ghazal
+		manualMappingOfRegionIdsToAdm1Ids.put("SD-31", new String[] {"SDN-1286"}); // Ash Sharqiyah
+		manualMappingOfRegionIdsToAdm1Ids.put("SD-32", new String[] {"SDN-1286"}); // Bahr al Ghazal
 		manualMappingOfRegionIdsToAdm1Ids.put("SD-33", new String[] {"SDN-881", "SDN-811", "SDN-797"}); // Darfur
-		manualMappingOfRegionIdsToAdm1Ids.put("SD-34", new String[] {"SDN-882", "SDN-883"}); // Kurdufan
-		manualMappingOfRegionIdsToAdm1Ids.put("SD-29", new String[] {"SDN-874"}); // Al Khartum
-
-		// South Sudan
-		manualMappingOfRegionIdsToAdm1Ids.put("SD-44", new String[] {"SDS-865"}); // Central Equatoria State
-		manualMappingOfRegionIdsToAdm1Ids.put("SD-28", new String[] {"SDS-892", "SDS-864"}); // Al Istiwa'iyah
-		manualMappingOfRegionIdsToAdm1Ids.put("SD-31", new String[] {"SDS-876", "SDS-884", "SDS-149", "SDN-863"}); // Ash Sharqiyah
-		manualMappingOfRegionIdsToAdm1Ids.put("SD-40", new String[] {"SDS-871"}); // Al Wahadah State
-		manualMappingOfRegionIdsToAdm1Ids.put("SD-35", new String[] {"SDS-869", "SDS-870"}); // Upper Nile
+		manualMappingOfRegionIdsToAdm1Ids.put("SD-34", new String[] {"SDN-1286"}); // Kurdufan
+		manualMappingOfRegionIdsToAdm1Ids.put("SD-44", new String[] {"SDN-1286"}); // Central Equatoria State
 
 		// Panama
 		manualMappingOfRegionIdsToAdm1Ids.put("PA-01", new String[] {"PAN-1958"}); // Panama - Bocas del Toro
@@ -806,15 +613,6 @@ public class GISDataPreprocessor {
 		// unmappableRegions.add("NI-14"); // Rivas
 		unmappableRegions.add("NI-16"); // Zelaya - not to be found on any map
 
-		// Andorra
-		unmappableRegions.add("AD-02"); // Canillo
-		unmappableRegions.add("AD-03"); // Encam
-		unmappableRegions.add("AD-04"); // La Massana
-		unmappableRegions.add("AD-05"); // Ordino
-		unmappableRegions.add("AD-06"); // Sant Julia de Loria
-		unmappableRegions.add("AD-07"); // Andorra la Vella
-		unmappableRegions.add("AD-08"); // Escaldes-Engordany
-
 		// Kirgistan
 		manualMappingOfRegionIdsToAdm1Ids.put("KG-01", new String[] {"KGZ-1115"}); // Bishkek
 		manualMappingOfRegionIdsToAdm1Ids.put("KG-02", new String[] {"KGZ-1116"}); // Chuy
@@ -834,39 +632,6 @@ public class GISDataPreprocessor {
 		manualMappingOfRegionIdsToAdm1Ids.put("AE-03", new String[] {"ARE-350"}); // Dubai
 		manualMappingOfRegionIdsToAdm1Ids.put("AE-04", new String[] {"ARE-341", "ARE-342"}); // Fujairah
 
-		// Turkey
-		manualMappingOfRegionIdsToAdm1Ids.put("TR-87", new String[] { "TUR-3010" }); // Bartin => merged with Zonguldak
-		remappedRegionIds.put("TR-88","TR-84"); // Igdir => Part of Kars
-		remappedRegionIds.put("TR-89","TR-87"); // Karabuk => Zonguldak
-		remappedRegionIds.put("TR-90","TR-84"); // Kilis=> merged with Gaziantep in NE
-		remappedRegionIds.put("TR-91","TR-81"); // Osmaniye => merged with Adana in NE
-		remappedRegionIds.put("TR-92","TR-34"); // Yalova => shown as part of istanbul on NE
-		remappedRegionIds.put("TR-93","TR-14"); // Duzce => shown as part of Bolu on natural earth
-
-		// Estonia
-		manualMappingOfRegionIdsToAdm1Ids.put("EE-10", new String[] { "EST-2345" });  // Parnu
-		manualMappingOfRegionIdsToAdm1Ids.put("EE-19", new String[] { "EST-2349" });  // Valgamaa
-		remappedRegionIds.put("EE-06","EE-03"); // Kohtla-Jarve
-		remappedRegionIds.put("EE-09","EE-03"); // Narva
-		remappedRegionIds.put("EE-15","EE-03"); // Sillamae
-		remappedRegionIds.put("EE-16","EE-01"); // Tallinn
-
-		// Russia
-		manualMappingOfRegionIdsToAdm1Ids.put("RU-85", new String[] { "RUS-2359" });// Vologda
-		manualMappingOfRegionIdsToAdm1Ids.put("RU-93", new String[] { "RUS-2610" });// Zabaykal'skiy Kray
-		remappedRegionIds.put("RU-90", "RU-58");
-		manualMappingOfRegionIdsToAdm1Ids.put("RU-92", new String[] { "RUS-3468" });// Kamchatskiy Kray
-		manualMappingOfRegionIdsToAdm1Ids.put("RU-47", new String[] { "RUS-2365" });// Moskwa
-		manualMappingOfRegionIdsToAdm1Ids.put("RU-49", new String[] { "RUS-2333", "RUS-282" });// Murmansk
-		manualMappingOfRegionIdsToAdm1Ids.put("RU-58", new String[] { "RUS-3200" });// Perm
-		manualMappingOfRegionIdsToAdm1Ids.put("RU-52", new String[] { "RUS-2334" });// Novgorod
-		manualMappingOfRegionIdsToAdm1Ids.put("RU-28", new String[] { "RUS-2353" });// Karelia
-		manualMappingOfRegionIdsToAdm1Ids.put("RU-32", new String[] { "RUS-2396" });// Khanty-Mansiy
-		remappedRegionIds.put("RU-36","RU-26");
-		manualMappingOfRegionIdsToAdm1Ids.put("RU-19", new String[] { "RUS-2303" }); // Ingush
-		manualMappingOfRegionIdsToAdm1Ids.put("RU-06", new String[] { "RUS-2354" }); // Arkhangel'sk
-		remappedRegionIds.put("RU-48", "RU-47");
-
 		// Japan
 		manualMappingOfRegionIdsToAdm1Ids.put("JP-06", new String[] {"JPN-1848"}); // Fukui
 		manualMappingOfRegionIdsToAdm1Ids.put("JP-10", new String[] {"JPN-3503"}); // Gumma
@@ -878,16 +643,6 @@ public class GISDataPreprocessor {
 		manualMappingOfRegionIdsToAdm1Ids.put("CY-01", new String[] {"CYP-3466"});  // Famagusta
 		manualMappingOfRegionIdsToAdm1Ids.put("CY-02", new String[] {"CYN+00?"});  // Kyrenia
 		manualMappingOfRegionIdsToAdm1Ids.put("CY-04", new String[] {"CYP-3464"});  // Nicosia
-
-		// Latvia
-		manualMappingOfRegionIdsToAdm1Ids.put("LV-24", new String[] { "LVA-1066" }); // Rezeknes
-		manualMappingOfRegionIdsToAdm1Ids.put("LV-20", new String[] { "LVA-1087" }); // Madonas
-		manualMappingOfRegionIdsToAdm1Ids.put("LV-28", new String[] { "LVA-1091" }); // Talsu
-		manualMappingOfRegionIdsToAdm1Ids.put("LV-29", new String[] { "LVA-1092" }); // Tukuma
-		manualMappingOfRegionIdsToAdm1Ids.put("LV-30", new String[] { "LVA-1077" }); // Valkas
-		manualMappingOfRegionIdsToAdm1Ids.put("LV-32", new String[] { "LVA-934" }); // Ventspils
-		remappedRegionIds.put("LV-33", "LV-32");
-		manualMappingOfRegionIdsToAdm1Ids.put("LV-31", new String[] { "LVA-1093" }); // Valmieras
 
 		// Iran
 		manualMappingOfRegionIdsToAdm1Ids.put("IR-01", new String[] {"IRN-3237"});  // Azarbayjan-e Bakhtari
@@ -911,7 +666,6 @@ public class GISDataPreprocessor {
 		unmappableRegions.add("QA-12");
 
 		// India
-		manualMappingOfRegionIdsToAdm1Ids.put("IN-22", new String[] {"IND-3262"}); // Puducherry
 		manualMappingOfRegionIdsToAdm1Ids.put("IN-32", new String[] {"IND-3504"}); // Daman and Diu
 
 		// Saudi Arabia
@@ -920,87 +674,9 @@ public class GISDataPreprocessor {
 		// Kuwait
 		manualMappingOfRegionIdsToAdm1Ids.put("KW-09", new String[] {"KWT-1666"});  // Mubarak al Kabir
 
-		// Lebanon
-		manualMappingOfRegionIdsToAdm1Ids.put("LB-01", new String[] { "LBN-3022" }); // Beqaa
-		manualMappingOfRegionIdsToAdm1Ids.put("LB-02", new String[] { "LBN-3060" }); // Al Janub
-		manualMappingOfRegionIdsToAdm1Ids.put("LB-03", new String[] { "LBN-3023" }); // Liban-Nord
-		manualMappingOfRegionIdsToAdm1Ids.put("LB-04", new String[] { "LBN-3024" }); // Beyrouth
-		manualMappingOfRegionIdsToAdm1Ids.put("LB-05", new String[] { "LBN-3025" }); // Mont-Liban
-		manualMappingOfRegionIdsToAdm1Ids.put("LB-07", new String[] { "LBN-3059" }); // Nabatiye
-		remappedRegionIds.put("LB-06", "LB-02"); // Liban-Sud
-		remappedRegionIds.put("LB-08", "LB-01"); // Beqaa
-		remappedRegionIds.put("LB-09", "LB-03"); // Liban-Nord
-		remappedRegionIds.put("LB-10", "LB-03"); // Aakk,r
-		remappedRegionIds.put("LB-11", "LB-01"); // Baalbek-Hermel
-
-		// Afghanistan
-		manualMappingOfRegionIdsToAdm1Ids.put("AF-14", new String[] { "AFG-1768" }); // Kapisa
-		manualMappingOfRegionIdsToAdm1Ids.put("AF-18", new String[] { "AFG-1764" }); // Nangarhar
-		manualMappingOfRegionIdsToAdm1Ids.put("AF-36", new String[] { "AFG-1759", "AFG-3413" }); // Paktia
-		manualMappingOfRegionIdsToAdm1Ids.put("AF-39", new String[] { "AFG-1752" }); // Oruzgan
-		manualMappingOfRegionIdsToAdm1Ids.put("AF-40", new String[] { "AFG-1772" }); // Parvan
-		manualMappingOfRegionIdsToAdm1Ids.put("AF-41", new String[] { "AFG-1753" }); // Daykondi - wrong label in natural earth
-		manualMappingOfRegionIdsToAdm1Ids.put("AF-42", new String[] { "AFG-1769" }); // Panjshir - wrong label in natural earth
-
-		// Cambodia
-		manualMappingOfRegionIdsToAdm1Ids.put("KH-01", new String[] { "KHM-1778" }); // Batdambang
-		manualMappingOfRegionIdsToAdm1Ids.put("KH-06", new String[] { "KHM-1797" }); // Kampot
-		manualMappingOfRegionIdsToAdm1Ids.put("KH-16", new String[] { "KHM-1781" }); // Siem Reap
-
-		// Taiwan
-		manualMappingOfRegionIdsToAdm1Ids.put("TW-02", new String[] { "TWN-1156"}); // Kao-hsiung
-		manualMappingOfRegionIdsToAdm1Ids.put("TW-03", new String[] { "TWN-1164", "TWN-1167", "TWN-1166" }); // T'ai-pei
-		manualMappingOfRegionIdsToAdm1Ids.put("TW-04", new String[] { "TWN-3414", "TWN-1177", "TWN-1176", "TWN+11?", "TWN-1158", "TWN-1160", "TWN-1161", "TWN-1162", "TWN-1163", "TWN-1165", "TWN-1168","TWN-1170", "TWN-1171", "TWN-1172", "TWN-1173", "TWN-1174", "TWN-1176", "TWN-1177"}); // T'ai-wan
-		manualMappingOfRegionIdsToAdm1Ids.put("TW-01", new String[] { "TWN-3415" } ); // Fu-chien - Kinmen
-
 		// Macau
 		// TODO: Maybe only map land leven and ignore regions as there is only 1 region
 		remappedRegionIds.put("MO-01", "MO-02"); // no region for Ilhas
-
-		// Azerbajian
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-01", new String[] { "AZE-1690" }); // Abseron
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-02", new String[] { "AZE-1722" }); // Agcabadi
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-14", new String[] { "AZE-1699" }); // Cabrayil
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-28", new String[] { "AZE-1735" }); // Lacin
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-29", new String[] { "AZE-1735" }); // Lankaran
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-23", new String[] { "AZE-1694" }); // Haciqabul
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-20", new String[] { "AZE-1679" }); // Ganca
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-37", new String[] { "AZE-1725" }); // Oguz
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-39", new String[] { "AZE-1726" }); // Qax
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-34", new String[] { "AZE-1710" }); // Naftalan
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-35", new String[] { "AZE-2422" }); // Naxcivan
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-36", new String[] { "AZE-1725" }); // Neftcala
-
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-42", new String[] { "AZE-1728" }); // Quba
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-40", new String[] { "AZE-1668" }); // Qazax - multiple here,fixthis
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-47", new String[] { "AZE-1727" }); // Saki
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-55", new String[] { "AZE-1737" }); // Susa
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-52", new String[] { "AZE-1686" }); // Samux
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-53", new String[] { "AZE-1712" }); // Siyazan
-		manualMappingOfRegionIdsToAdm1Ids.put("AZ-65", new String[] { "AZE-1734" }); // Xocavand
-
-		// TODO: redirect this
-		// manualMappingOfRegionIdsToAdm1Ids.put("AZ-30", new String[] { "AZE-" }); // Lankaran
-		// manualMappingOfRegionIdsToAdm1Ids.put("AZ-48", new String[] { "AZE-" }); // Saki
-		remappedRegionIds.put("AZ-30", "AZ-29"); // Lankaran
-		remappedRegionIds.put("AZ-48", "AZ-47"); // Saki
-		remappedRegionIds.put("AZ-56", "AZ-55"); // Susa
-
-		// Brunei
-		manualMappingOfRegionIdsToAdm1Ids.put("BN-08", new String[] { "BRN-1181" }); // Belait
-		manualMappingOfRegionIdsToAdm1Ids.put("BN-09", new String[] { "BRN-1182" }); // Brunei and Muara
-		manualMappingOfRegionIdsToAdm1Ids.put("BN-10", new String[] { "BRN-1183" }); // Temburong
-		manualMappingOfRegionIdsToAdm1Ids.put("BN-15", new String[] { "BRN-1184" }); // Tutong
-
-		// Benin
-		remappedRegionIds.put("BN-07", "BJ-07"); // Alibori
-		remappedRegionIds.put("BN-11", "BJ-11"); // Collines
-		remappedRegionIds.put("BN-12", "BJ-12"); // Kouffo
-		remappedRegionIds.put("BN-13", "BJ-13"); // Donga
-		remappedRegionIds.put("BN-14", "BJ-14"); // Littoral
-		remappedRegionIds.put("BN-16", "BJ-16"); // Oueme
-		remappedRegionIds.put("BN-17", "BJ-17"); // Plateau
-		remappedRegionIds.put("BN-18", "BJ-18"); // Zou
 
 		// Uganda
 		unmappableRegions.add("RW-01");
@@ -1345,278 +1021,7 @@ public class GISDataPreprocessor {
 
 	}
 
-	private static void readMaxmindCountryToContinentsMappings() throws IOException
-	{
-		File file = new File(MAXMIND_COUNTRIES_TO_CONTINENTS);
-		BufferedReader fileReader = new BufferedReader(new FileReader(file));
-
-		String currentlyProcessedline = null;
-
-		do {
-			currentlyProcessedline = fileReader.readLine();
-			if (currentlyProcessedline != null) {
-				// Format of a line
-				// A1,--
-				// A2,--
-				// AD,EU
-				// AE,AS
-
-				// To check if a line is valid
-				//   - the first two characters need to be letters in the range from A-Z (upper case), with the exceptions of A1,A2 and O1
-				//   - the third characters needs to be a comma (,)
-				//   - the fourth fifth characters need to be one of the entries in maxmindContinentIdToCompuwareContinentIdMap
-				assert currentlyProcessedline.length() == 5;
-				String countryCode = currentlyProcessedline.substring(0, 2);
-				if (countryCode.equals("A1") || countryCode.equals("A2") || countryCode.equals("O1")) {
-					// special cases, we know that they are there ant that the are okay so we skip the checks
-				} else {
-					assert isAToZ(currentlyProcessedline.charAt(0));
-					assert isAToZ(currentlyProcessedline.charAt(1));
-				}
-				assert currentlyProcessedline.charAt(2) == ',';
-				String continentCode = currentlyProcessedline.substring(3);
-				assert maxmindContinentIdToCompuwareContinentIdMap.containsKey(continentCode);
-
-				// add entry to country to continent id map
-				countryIdToContinentIdMap.put(countryCode, maxmindContinentIdToCompuwareContinentIdMap.get(continentCode));
-			}
-		} while (currentlyProcessedline != null);
-		fileReader.close();
-	}
-
-	/**
-	 * Reads the country ids (iso3266 as used by maxmind) from a csv file and returns it as
-	 * a map. The keys of the map are the country ids and the entries the country names.
-	 *
-	 * @return
-	 * @throws IOException
-	 */
-	private static void readMaxmindCountryIds(Map <String, Region> regions) throws IOException
-	{
-		File file = new File(MAXMIND_COUNTRIES);
-		BufferedReader fileReader = new BufferedReader(new FileReader(file));
-
-		int lineNumber = 0;
-		Object replaced = null;
-		String currentlyProcessedline = null;
-		do {
-			currentlyProcessedline = fileReader.readLine();
-			if (currentlyProcessedline != null) {
-
-				// Format of a line
-				// AT,"Austria"
-				// DE,"Germany"
-				//
-				// But there are also case with a comma in the name, e.g.
-				// BQ,"Bonaire, Saint Eustatius and Saba"
-				// CD,"Congo, The Democratic Republic of the"
-				//
-				// To check if a line is valid
-				//   - the first two characters need to be letters in the range from A-Z (upper case), with the exceptions of A1,A2 and O1
-				//   - the third characters needs to be a comma (,)
-				//   - the fourth and the last characters need to be quotation marks (")
-				//
-				// However there are also a few special cases that does not match that pattern
-				//   A1,"Anonymous Proxy"
-				//   A2,"Satellite Provider"
-				//   O1,"Other Country"
-
-				assert currentlyProcessedline.length() > 2;
-				String countryCode = currentlyProcessedline.substring(0, 2);
-				if (countryCode.equals("A1") || countryCode.equals("A2") || countryCode.equals("O1")) {
-					// special cases, we know that they are there ant that the are okay so we skip the checks
-				} else {
-					assert isAToZ(currentlyProcessedline.charAt(0));
-					assert isAToZ(currentlyProcessedline.charAt(1));
-				}
-				assert currentlyProcessedline.charAt(2) == ',';
-				assert currentlyProcessedline.charAt(3) == '"';
-				assert currentlyProcessedline.charAt(currentlyProcessedline.length() - 1) == '"';
-
-				// TODO: temporary shortcut to speed things up - remove
-				if (!getContinentCode(countryCode).equals("E")) {
-					continue;
-				}
-				/*if (!countryCode.equals("SD")) {
-					continue;
-				}*/
-
-				// Read the name from the line
-				String countryName  = currentlyProcessedline.substring(3);
-
-				// remove the quotation marks from the country name
-				countryName = countryName.replace("\"", "");
-
-				// create region object for the country
-				Region country = new Region(countryCode, countryName, RegionType.COUNTRY, getContinentCode(countryCode));
-				country.setMappable(!
-					(unmappableRegions.contains(countryCode) || remappedRegionIds.containsKey(countryCode))
-				);
-
-				replaced = regions.put(countryCode, country);
-				// check if there was no previous entry with this id, otherwise fail
-				assert replaced == null;
-
-				// check if all values are correctly set
-				assert country.getCode() != null && !country.getCode().isEmpty();
-				assert country.getCountryCode() != null && !country.getCountryCode().isEmpty();
-				assert country.getContinentCode() != null && !country.getContinentCode().isEmpty();
-				assert country.getName() != null && !country.getName().isEmpty();
-
-				// System.out.println("Successfully processed Country " + countryCode + " (line " + (++lineNumber) + ")");
-			}
-
-		} while (currentlyProcessedline != null);
-		fileReader.close();
-	}
-
-	/**
-	 * Reads the country ids (iso3266 as used by maxmind) from a csv file and returns it as
-	 * a map. The keys of the map are the country ids and the entries the country names.
-	 *
-	 * @return
-	 * @throws IOException
-	 */
-	private static void readMaxmindRegionIds(Map <String, Region> regions) throws IOException
-	{
-
-		File file = new File(MAXMIND_REGIONS);
-		BufferedReader fileReader = new BufferedReader(new FileReader(file));
-
-		int lineNumber = 0;
-		Object replaced = null;
-		String currentlyProcessedline = null;
-		do {
-			currentlyProcessedline = fileReader.readLine();
-			if (currentlyProcessedline != null) {
-
-				// Format of a line:
-				// AT,01,"Burgenland"
-				// AT,02,"Karnten"
-				//
-				// But there are also lines with a comma in the name
-				// US,AE,"Armed Forces Europe, Middle East, & Canada"
-
-				// To check if a line is valid
-				//   - the first two characters need to be letters in the range from A-Z (upper case)
-				//   - the third characters needs to be a comma (,)
-				//   - the fourth and fifth characters need to be
-				//       - letters in the case of CA and US
-				//       - letters or numbers for the other countries
-				//   - the sixth character needs to be a comma (,)
-				//   - the seventh and the last characters need to be quotation marks (")
-
-				assert currentlyProcessedline.length() > 8;
-				assert isAToZ(currentlyProcessedline.charAt(0));
-				assert isAToZ(currentlyProcessedline.charAt(1));
-				assert currentlyProcessedline.charAt(2) == ',';
-
-				// the fourth and fifth characters need to be
-				String countryCode = currentlyProcessedline.substring(0,2);
-
-				// TODO: temporary shortcut to speed things up - remove
-				/*if (!countryCode.equals("DE")) {
-					continue;
-				}*/
-				if (countryCode.equals("US") || countryCode.equals("CA")) {
-					// letters in the case of CA and US
-					assert isAToZ(currentlyProcessedline.charAt(3));
-					assert isAToZ(currentlyProcessedline.charAt(4));
-				} else {
-					// letters or numbers for the other countries
-					assert isAToZ(currentlyProcessedline.charAt(3)) || Character.isDigit(currentlyProcessedline.charAt(3));
-					assert isAToZ(currentlyProcessedline.charAt(4)) || Character.isDigit(currentlyProcessedline.charAt(4));
-				}
-
-				assert currentlyProcessedline.charAt(5) == ',';
-				assert currentlyProcessedline.charAt(6) == '"';
-				assert currentlyProcessedline.charAt(currentlyProcessedline.length() - 1) == '"';
-
-
-				// Read the values from the currently processed line
-				String regionCode  = currentlyProcessedline.substring(3,5);
-				String regionName  = currentlyProcessedline.substring(6);
-
-				// remove the quotation marks from the region name
-				regionName = regionName.replace("\"", "");
-
-				String uniqueRegionCode = createUniqueRegionCode(countryCode, regionCode);
-				// remapped regions are displayed in another region
-				if (remappedRegionIds.containsKey(uniqueRegionCode)) {
-					continue;
-				}
-				Region region = new Region(uniqueRegionCode, regionName, RegionType.REGION, countryCode, getContinentCode(countryCode));
-				region.setMappable(!
-						(unmappableRegions.contains(uniqueRegionCode) || remappedRegionIds.containsKey(uniqueRegionCode))
-				);
-
-				/* if (specialCasesWhereRegionsAreThreatedAsCountries.containsKey(uniqueRegionCode)) {
-					region.setType(RegionType.COUNTRY);
-					region.setCountryCode(countryCode);
-					region.setCode();
-					region.setContinentCode(continentCode);
-				} */
-
-				replaced = regions.put(uniqueRegionCode, region);
-				// check if there was no previous entry with this id, otherwise fail
-				assert replaced == null;
-
-				// check if all values are correctly set
-				assert region.getCode() != null && !region.getCode().isEmpty();
-				assert region.getCountryCode() != null && !region.getCountryCode().isEmpty();
-				assert region.getContinentCode() != null && !region.getContinentCode().isEmpty();
-				assert region.getName() != null && !region.getName().isEmpty();
-
-				// System.out.println("Successfully processed Region " + uniqueRegionCode + " (line " + (++lineNumber) + ")");
-			}
-
-		} while (currentlyProcessedline != null);
-		fileReader.close();
-	}
-
-	private static void readFIPSToISOMapping() throws IOException
-	{
-
-		File file = new File(FIPS_TO_ISO_COUNTRY_CODE_MAPPING);
-		BufferedReader fileReader = new BufferedReader(new FileReader(file));
-
-		int lineNumber = 0;
-		Object replaced = null;
-		String currentlyProcessedline = null;
-		do {
-			currentlyProcessedline = fileReader.readLine();
-			if (currentlyProcessedline != null) {
-
-				// Format of a line:
-				// AF;AF;;
-				// AL;AL;;
-				// But there are also lines that divert from this
-				// ;BQ;;AN(2060)
-				// #NT;AN;	# ISO 3166-1 Change Notice V.8, 12/15/2010 drops entry Netherlands Antilles
-
-				// We only process lines we deem valid and skip all other
-				// Valid is defined as
-				//  - First 2 characters are uppercase letters
-				//  - Third character is a semicolon
-				//  - Next 2 characters are uppercase letters
-				if (currentlyProcessedline.length() >= 5
-						&& isAToZ(currentlyProcessedline.charAt(0))
-						&& isAToZ(currentlyProcessedline.charAt(1))
-						&& isAToZ(currentlyProcessedline.charAt(3))
-						&& isAToZ(currentlyProcessedline.charAt(4))
-						&& currentlyProcessedline.charAt(2) == ';')
-				{
-					String fipsCode = currentlyProcessedline.substring(0,2);
-					String isoCode = currentlyProcessedline.substring(3,5);
-					isoCountryCodeToFipsCountryCode.put(isoCode, fipsCode);
-				}
-
-			}
-		} while (currentlyProcessedline != null);
-		fileReader.close();
-
-
-	}
+	
 
 	private static void initShapeFileDataSources() throws IOException
 	{
@@ -1705,7 +1110,7 @@ public class GISDataPreprocessor {
 				}*/
 			} else {
 				// all other countries
-				if (!region.getContinentCode().equals("E") /*&& region.getContinentCode() != "S" && region.getContinentCode() != "E"*/) {
+				if (!region.getContinentCode().equals("A") /*&& region.getContinentCode() != "S" && region.getContinentCode() != "E"*/) {
 					continue;
 				}
 				/*

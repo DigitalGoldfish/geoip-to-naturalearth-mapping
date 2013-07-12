@@ -30,19 +30,14 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class ShapeSimplificationTest {
 
-	private static final String MAXMIND_COUNTRIES = "resources/maxmind-countries.csv";
-	private static final String MAXMIND_REGIONS = "resources/maxmind-regions.csv";
-	private static final String MAXMIND_COUNTRIES_TO_CONTINENTS = "resources/maxmind-countries-to-continents.csv";
-	private static final String FIPS_TO_ISO_COUNTRY_CODE_MAPPING = "resources/fips10-4_to_iso3166_countrycodes.csv";
+
 
 	private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "resources/naturalearth/v20/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp";
 	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V2 = "resources/naturalearth/v20/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces_shp.shp";
-	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V14 = "resources/naturalearth/v14/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces_shp.shp";
+	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v30/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp";
 
 	private static SimpleFeatureSource countryFeatureSource;
 	private static SimpleFeatureSource regionFeatureSource;
-	private static SimpleFeatureSource regionFeatureSourcev14;
-
 
 
 	/**
@@ -63,7 +58,7 @@ public class ShapeSimplificationTest {
 				original.add(feature);
 			}
 
-			DefaultFeatureCollection simplifiedFeatures = simplifyShapes(regions);
+			SimpleFeatureCollection simplifiedFeatures = simplifyShapes(regions);
 			// combineGeometries(regions);
 			generateGeoJSONFile("original", original);
 			generateGeoJSONFile("simplification_0_1", simplifiedFeatures);
@@ -71,14 +66,10 @@ public class ShapeSimplificationTest {
 		} catch (IOException e) {
 			System.out.println("IOException during preprocessing of GIS Data!");
 			e.printStackTrace();
-		} /* catch (CQLException e) {
-			System.out.println("IOException during preprocessing of GIS Data!");
-			e.printStackTrace();
-		} */
-
+		}
 	}
 
-	private static DefaultFeatureCollection simplifyShapes(List <SimpleFeature> features)
+	private static SimpleFeatureCollection simplifyShapes(List <SimpleFeature> features)
 	{
 
 		/* Geometry[] geometries = new Geometry[features.size()];
@@ -102,7 +93,7 @@ public class ShapeSimplificationTest {
 			collection.add(createSimpleFeature(feature));
 		}
 
-		DefaultFeatureCollection simplifiedFeatures = PolygonBorderPreservingSimplifier.simplify(collection, 0.01, true);
+		SimpleFeatureCollection simplifiedFeatures = PolygonBorderPreservingSimplifier.simplify(collection, 0.01, true);
 		return simplifiedFeatures;
 		// i = 0;
 		/* for (SimpleFeature feature: features) {
@@ -117,13 +108,9 @@ public class ShapeSimplificationTest {
 		ShapefileDataStore store = new ShapefileDataStore(file.toURI().toURL());
 		countryFeatureSource = store.getFeatureSource();
 
-		file = new File(NATURAL_EARTH_ADMIN_1_BOUNDARIES_V2);
+		file = new File(NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3);
 		store = new ShapefileDataStore(file.toURI().toURL());
 		regionFeatureSource = store.getFeatureSource();
-
-		file = new File(NATURAL_EARTH_ADMIN_1_BOUNDARIES_V14);
-		store = new ShapefileDataStore(file.toURI().toURL());
-		regionFeatureSourcev14 = store.getFeatureSource();
 	}
 
 	private static SimpleFeature fetchFeatureFromCountryDataSource(String code) {
@@ -162,7 +149,7 @@ public class ShapeSimplificationTest {
 		return collectedFeatures;
 	}
 
-	private static void generateGeoJSONFile(String filename, DefaultFeatureCollection features) throws IOException
+	private static void generateGeoJSONFile(String filename, SimpleFeatureCollection features) throws IOException
 	{
 		FeatureJSON feature = new FeatureJSON(new GeometryJSON(4));
 		FileWriter writer = new FileWriter("out/" + filename + ".json");
@@ -225,18 +212,7 @@ public class ShapeSimplificationTest {
 		builder.set("region_type", "region" );
 		builder.set("name", feature.getAttribute("name"));
 		builder.add(feature.getDefaultGeometry());
-/*
-		List<SimpleFeature> features = region.getFeatures();
-		if (features.size() == 1) {
-			// builder.set("geometry", features.get(0).getDefaultGeometry());
-			Geometry geometry = ((Geometry) features.get(0).getDefaultGeometry()).buffer(0);
-			// geometry = TopologyPreservingSimplifier.simplify(geometry, 0.5);
-			builder.add(geometry);
-		} else {
-			Geometry geometry = combineGeometries(features);
-			builder.add(geometry);
-		}
-*/
+
 		SimpleFeature newFeature = builder.buildFeature(feature.getAttribute("code_hasc").toString());
 
 		return newFeature;

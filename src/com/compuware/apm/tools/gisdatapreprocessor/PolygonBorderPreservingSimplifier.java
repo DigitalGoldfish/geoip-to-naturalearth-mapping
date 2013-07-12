@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -60,13 +61,13 @@ public class PolygonBorderPreservingSimplifier
 	/**
 	 * Geometry type name for multi polygon geometry
 	 */
-	protected static final String GEOMETRY_TYPE_MULTIPOLYGON = "MultiPolygon";
+	private static final String GEOMETRY_TYPE_MULTIPOLYGON = "MultiPolygon";
 
 
 	/**
 	 * Geometry type name for polygon geometry
 	 */
-	protected static final String GEOMETRY_TYPE_POLYGON = "Polygon";
+	private static final String GEOMETRY_TYPE_POLYGON = "Polygon";
 
 
 	/**
@@ -84,7 +85,7 @@ public class PolygonBorderPreservingSimplifier
 	 * Note: The key for a point has to be generated using the
 	 * 	<code>generateStringIdForPoint</code> function.
 	 */
-	protected Map<String, MutableInt> numberOfConnectedPoints;
+	private Map<String, MutableInt> numberOfConnectedPoints;
 
 
 	/**
@@ -95,34 +96,34 @@ public class PolygonBorderPreservingSimplifier
 	 * Note: The key for the simplified line has to be generated using the
 	 * 	<code>generateStringIdForLine</code> function.
 	 */
-	protected Map<String, LineString> simplifiedLines;
+	private Map<String, LineString> simplifiedLines;
 
 
 	/**
 	 * List of points that are already fixed and cannot be removed or simplified.
 	 * This are the end points of the already existing simplified line fragments.
 	 */
-	protected List<String> pivotPoints;
+	private List<String> pivotPoints;
 
 
 	/**
 	 * Used for creating new geometries (lines, polygons, multipolygons, ...)
 	 */
-	protected GeometryFactory geometryFactory;
+	private GeometryFactory geometryFactory;
 
 
 	/**
 	 * Used to duplicate the features passed to this class as we do not modify
 	 * the input shapes but return a copy of the features with simplified shapes.
 	 */
-	protected SimpleFeatureBuilder simpleFeatureBuilder;
+	private SimpleFeatureBuilder simpleFeatureBuilder;
 
 
 	/**
 	 * The degree of simplification, i.e. the maximum distance a point can be
 	 * from his original location after simplification.
 	 */
-	protected double distanceTolerance = 0.01;
+	private double distanceTolerance = 0.01;
 
 
 	/**
@@ -130,13 +131,13 @@ public class PolygonBorderPreservingSimplifier
 	 * TODO: still needs to be implemented I think. (the current approach is
 	 * 	lacking)
 	 */
-	protected boolean preserveTopology = false;
+	private boolean preserveTopology = false;
 
 
 	/**
 	 * The collection of features that should be simplified.
 	 */
-	protected DefaultFeatureCollection features;
+	private SimpleFeatureCollection features;
 
 
 	/**
@@ -151,8 +152,8 @@ public class PolygonBorderPreservingSimplifier
 	 * @return a new feature collection containing the features with simplified
 	 * 	shapes.
 	 */
-	public static DefaultFeatureCollection simplify(
-			DefaultFeatureCollection features,
+	public static SimpleFeatureCollection simplify(
+			SimpleFeatureCollection features,
 			double distanceTolerance,
 			boolean preserveTopology)
 	{
@@ -168,7 +169,7 @@ public class PolygonBorderPreservingSimplifier
 	 * Creates a new instance of the simplifier with the given features
 	 * @param features
 	 */
-	public PolygonBorderPreservingSimplifier(DefaultFeatureCollection features)
+	public PolygonBorderPreservingSimplifier(SimpleFeatureCollection features)
 	{
 		this.features = features;
 		this.geometryFactory = new GeometryFactory(new PrecisionModel());
@@ -219,7 +220,7 @@ public class PolygonBorderPreservingSimplifier
 	 *
 	 * @return a copy of features with the simplified shape.
 	 */
-	public DefaultFeatureCollection getResultFeatureCollection()
+	public SimpleFeatureCollection getResultFeatureCollection()
 	{
 		this.simplifiedLines = new HashMap<String, LineString>();
 		this.pivotPoints = new ArrayList<String>();
@@ -235,7 +236,7 @@ public class PolygonBorderPreservingSimplifier
 	 *
 	 * @return a collection of <code>SimpleFeature</code>
 	 */
-	protected DefaultFeatureCollection simplify()
+	private SimpleFeatureCollection simplify()
 	{
 		// Create a new DefaultFeatureCollection to store the result (copies
 		// of the original features with simplified geometries).
@@ -301,7 +302,7 @@ public class PolygonBorderPreservingSimplifier
 	 * the feature collection of this simplifier and stores it in the global
 	 * Map <code>numberOfConnectedPoints</code>.
 	 */
-	protected void determineNumberOfConnectionsForEachPoint() {
+	private void determineNumberOfConnectionsForEachPoint() {
 		numberOfConnectedPoints = new HashMap<String, MutableInt>();
 
 		// extract all polygons from all features
@@ -321,7 +322,7 @@ public class PolygonBorderPreservingSimplifier
 
 
 
-	protected Polygon simplifyPolygon(Polygon polygon)
+	private Polygon simplifyPolygon(Polygon polygon)
 	{
 		// Start by simplifying the exterior ring of the polygon. There always exists
 		// exactly one exterior ring, no more  - no less.
@@ -357,7 +358,7 @@ public class PolygonBorderPreservingSimplifier
 		return new Polygon(simplifiedExternalRing, internalLines, geometryFactory);
 	}
 
-	protected LinearRing convertLineStringToLinearRing(LineString line) {
+	private LinearRing convertLineStringToLinearRing(LineString line) {
 		List<Point> points = new ArrayList<Point>(line.getNumPoints() + 1);
 		for (int i = 0; i < line.getNumPoints(); i++) {
 			points.add(line.getPointN(i));
@@ -369,7 +370,7 @@ public class PolygonBorderPreservingSimplifier
 		return new LinearRing(closedLine.getCoordinateSequence(), geometryFactory);
 	}
 
-	protected LineString simplifyRing(LineString ring)
+	private LineString simplifyRing(LineString ring)
 	{
 		List<Point> points = new ArrayList<Point>();
 		for (int i = 0; i < ring.getNumPoints() - 1; i++) {
@@ -476,7 +477,7 @@ public class PolygonBorderPreservingSimplifier
 	 *
 	 * @param lines
 	 */
-	protected void analyzePointsOfPolygon(Polygon polygon)
+	private void analyzePointsOfPolygon(Polygon polygon)
 	{
 		List<LineString> lines = extractLinesFromPolygon(polygon);
 		for (LineString line: lines) {
@@ -527,7 +528,7 @@ public class PolygonBorderPreservingSimplifier
 		}
 	}
 
-	protected String buildLineKey(List<Point> points) {
+	private String buildLineKey(List<Point> points) {
 		return generateStringIdForLine(points.get(0), points.get(1), points.get(points.size() - 1));
 	}
 
@@ -537,7 +538,7 @@ public class PolygonBorderPreservingSimplifier
 	 * @param polygon
 	 * @return
 	 */
-	protected List<LineString> extractLinesFromPolygon(Polygon polygon)
+	private List<LineString> extractLinesFromPolygon(Polygon polygon)
 	{
 		List<LineString> lines = new ArrayList<LineString>();
 		lines.add(polygon.getExteriorRing());
@@ -554,7 +555,7 @@ public class PolygonBorderPreservingSimplifier
 	 * @param features the collection from which polygons should be extracted.
 	 * @return
 	 */
-	protected List<Polygon> extractPolygons(DefaultFeatureCollection features)
+	private List<Polygon> extractPolygons(SimpleFeatureCollection features)
 	{
 		SimpleFeatureIterator iterator = features.features();
 		List<Polygon> result = new ArrayList<Polygon>();
@@ -578,7 +579,7 @@ public class PolygonBorderPreservingSimplifier
 	 * @param feature the feature from which to extract the polygoons
 	 * @return a <code>List</code> with 0 or more <code>Polygons</code>
 	 */
-	protected List<Polygon> extractPolygons(SimpleFeature feature)
+	private List<Polygon> extractPolygons(SimpleFeature feature)
 	{
 		// retrieve geometry of feature
 		Geometry geometry = (Geometry) feature.getDefaultGeometry();
@@ -602,7 +603,7 @@ public class PolygonBorderPreservingSimplifier
 	 * @param geometry
 	 * @return
 	 */
-	protected List<Polygon> extractPolygonsOfGeometry(Geometry geometry)
+	private List<Polygon> extractPolygonsOfGeometry(Geometry geometry)
 	{
 		List<Polygon> polygons = new ArrayList<Polygon>();
 		if (GEOMETRY_TYPE_POLYGON.equals(geometry.getGeometryType())) {
@@ -630,7 +631,7 @@ public class PolygonBorderPreservingSimplifier
 	 * @param line the line for which an id should be generated
 	 * @return the id for the line
 	 */
-	protected String generateStringIdForLine(LineString line)
+	private String generateStringIdForLine(LineString line)
 	{
 		return generateStringIdForLine(line.getPointN(0), line.getPointN(1),
 				line.getPointN(line.getNumPoints() - 1));
@@ -650,7 +651,7 @@ public class PolygonBorderPreservingSimplifier
 	 * @param endPoint the end point of the line
 	 * @return the id for the line
 	 */
-	protected String generateStringIdForLine(Point firstPoint,
+	private String generateStringIdForLine(Point firstPoint,
 			Point secondPoint, Point endPoint)
 	{
 		return generateStringIdForPoint(firstPoint) + " "
@@ -671,7 +672,7 @@ public class PolygonBorderPreservingSimplifier
 	 * @param point the point for which the id should be generated
 	 * @return a string representation of the point
 	 */
-	protected String generateStringIdForPoint(Point point)
+	private String generateStringIdForPoint(Point point)
 	{
 		return String.format("%." + KEY_PRECISION + "f %." + KEY_PRECISION + "f",
 				point.getX(), point.getY());
@@ -684,7 +685,7 @@ public class PolygonBorderPreservingSimplifier
 	 * @param points a list of <code>Point</code> objects
 	 * @return the points as an array of <code>Coorinddate</code> objects
 	 */
-	protected Coordinate[] pointToCoordinates(List<Point> points) {
+	private Coordinate[] pointToCoordinates(List<Point> points) {
 		Coordinate[] coordinates = new Coordinate[points.size()];
 		int i = 0;
 		for (Point point: points) {
@@ -701,7 +702,7 @@ public class PolygonBorderPreservingSimplifier
 	 *
 	 * TODO: should we use deep copy here ??
 	 */
-	protected SimpleFeature cloneSimpleFeature(SimpleFeature original)
+	private SimpleFeature cloneSimpleFeature(SimpleFeature original)
 	{
 		if (simpleFeatureBuilder == null) {
 			simpleFeatureBuilder = new SimpleFeatureBuilder(original.getFeatureType());
