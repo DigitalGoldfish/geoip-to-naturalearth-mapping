@@ -245,7 +245,7 @@ public class BorderRespectingSimplifier
 
 					MultiPolygon shape = geometryFactory.createMultiPolygon(polys);
 					SimpleFeature simplifiedFeature = cloneSimpleFeature(feature);
-					simplifiedFeature.setDefaultGeometry(shape);
+					simplifiedFeature.setDefaultGeometry(shape.buffer(0));
 					result.add(simplifiedFeature);
 				} else {
 					// For this feature no shape is left after simplification (this can happen if topology isn't preserved).

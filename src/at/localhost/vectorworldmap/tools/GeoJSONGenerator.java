@@ -16,29 +16,39 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-
+import at.localhost.vectorworldmap.util.FeatureJSON;
 import at.localhost.vectorworldmap.util.Region;
 import at.localhost.vectorworldmap.util.Region.RegionType;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.operation.valid.IsValidOp;
+import com.vividsolutions.jts.operation.valid.TopologyValidationError;
+
 public class GeoJSONGenerator {
 
-	private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "resources/naturalearth/v20/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp";
-	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v30/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp";
+//	 private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "resources/naturalearth/v20/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp";
+//	 private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v30/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp";
+
+	private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "out/shp/simplified_features_admin0_tolerance_0_05.shp";
+	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "out/shp/simplified_features_admin1_tolerance_0_05.shp";
 
 	private static SimpleFeatureSource countryFeatureSource;
 	private static SimpleFeatureSource regionFeatureSource;
 
 	private static SimpleFeatureType outputFeatureType;
+
+	private static final Map<String, String> continentNameToContinentCode = new HashMap<String, String>();
+	private static final Map<String, String> continentCodeToContinentName = new HashMap<String, String>();
+
+	private static final Map<String, String> subregionNameToSubregionCode = new HashMap<String, String>();
+	private static final Map<String, String> subregionCodeToSubregionName = new HashMap<String, String>();
 
 	private static final Map<String, List<Region>> subregionsByContinents = new HashMap<String, List<Region>>();
 	private static final Map<String, List<Region>> countriesByContinents = new HashMap<String, List<Region>>();
@@ -49,6 +59,43 @@ public class GeoJSONGenerator {
 	private static final Map<String, Region> subregions = new HashMap<String, Region>();
 
 	private static final Map<String, String> subregionToContinent = new HashMap<String, String>();
+
+	static {
+		continentNameToContinentCode.put("Africa", "F");
+		continentNameToContinentCode.put("Asia", "A");
+		continentNameToContinentCode.put("Antarctica", null); // we ignore Antarctica
+		continentNameToContinentCode.put("Europe", "E");
+		continentNameToContinentCode.put("North America", "N");
+		continentNameToContinentCode.put("South America", "S");
+		continentNameToContinentCode.put("Oceania", "O");
+		continentNameToContinentCode.put("Seven seas (open ocean)", /*"P"*/ null);
+
+		subregionNameToSubregionCode.put("Middle Africa", "MAF");
+		subregionNameToSubregionCode.put("Western Europe", "WEU");
+		subregionNameToSubregionCode.put("Western Asia", "WAS");
+		subregionNameToSubregionCode.put("Caribbean", "CAR");
+		subregionNameToSubregionCode.put("Eastern Africa", "EAF");
+		subregionNameToSubregionCode.put("Eastern Europe", "EEU");
+		subregionNameToSubregionCode.put("Central Asia", "CAS");
+		subregionNameToSubregionCode.put("Southern Europe", "SEU");
+		subregionNameToSubregionCode.put("Seven seas (open ocean)", "OCE");
+		subregionNameToSubregionCode.put("Eastern Asia", "EAS");
+		subregionNameToSubregionCode.put("Northern America", "NAM");
+		subregionNameToSubregionCode.put("South America", "SAM");
+		subregionNameToSubregionCode.put("Australia and New Zealand", "ANZ");
+		subregionNameToSubregionCode.put("Southern Africa", "SAF");
+		subregionNameToSubregionCode.put("Northern Africa", "NAF");
+		subregionNameToSubregionCode.put("South-Eastern Asia", "SEA");
+		subregionNameToSubregionCode.put("Northern Europe", "NEU");
+		subregionNameToSubregionCode.put("Micronesia", "MIC");
+		subregionNameToSubregionCode.put("Melanesia", "MEL");
+		subregionNameToSubregionCode.put("Polynesia", "POL");
+		subregionNameToSubregionCode.put("Western Africa", "WAF");
+		subregionNameToSubregionCode.put("Central America", "CAM");
+		subregionNameToSubregionCode.put("Southern Asia", "SAS");
+	}
+
+
 	public static void main(String[] args) throws IOException {
 
 		initShapeFileDataSources();
@@ -65,10 +112,11 @@ public class GeoJSONGenerator {
 	{
 		for (String continentCode: countriesByContinents.keySet()) {
 			List<Region> countriesForContinent = countriesByContinents.get(continentCode);
-			Geometry geometry = mergeRegions(countriesForContinent);
+			Geometry geometry = mergeRegions(countriesForContinent, continentCode);
 			if (geometry != null) {
-				Region continent = new Region(continentCode, continentCode, RegionType.CONTINENT, continentCode);
+				Region continent = new Region(continentCode, continentCodeToContinentName.get(continentCode), RegionType.CONTINENT, continentCode);
 				continent.setGeometry(geometry);
+				continent.setParentId("world");
 				continents.put(continentCode, continent);
 			} else {
 				System.out.println("Error generating shape for " + continentCode);
@@ -78,12 +126,14 @@ public class GeoJSONGenerator {
 		for (String subregionCode: countriesBySubregions.keySet()) {
 			List<Region> countriesForSubregion = countriesBySubregions.get(subregionCode);
 			if (countriesForSubregion != null && countriesForSubregion.size() > 0) {
-				Geometry geometry = mergeRegions(countriesForSubregion);
+				Geometry geometry = mergeRegions(countriesForSubregion, subregionCode);
 				if (geometry != null) {
 					String continentCode = subregionToContinent.get(subregionCode);
-					Region subregion = new Region(subregionCode, subregionCode, RegionType.SUBREGION, continentCode);
+					Region subregion = new Region(subregionCode,  subregionCodeToSubregionName.get(subregionCode), RegionType.SUBREGION, continentCode);
 					subregion.setGeometry(geometry);
+					subregion.setParentId(continentCode);
 					subregions.put(subregionCode, subregion);
+					System.out.println("Subregion: " + subregionCode);
 					if (!subregionsByContinents.containsKey(continentCode)) {
 						subregionsByContinents.put(continentCode, new ArrayList<Region>());
 					}
@@ -97,62 +147,87 @@ public class GeoJSONGenerator {
 		}
 	}
 
-	private static Geometry mergeRegions(List<Region> regions) {
+	private static Geometry mergeRegions(List<Region> regions, String code) {
 		List<Geometry> geometries = new ArrayList<Geometry>();
 		for (Region region : regions) {
-			geometries.add(region.getGeometry().buffer(0));
+			Geometry geometry = region.getGeometry().buffer(0);
+			geometries.add(geometry);
+			validateGeometry(geometry, region.getCode());
 		}
 
 		GeometryFactory factory = JTSFactoryFinder.getGeometryFactory(null);
-		GeometryCollection geometryCollection = (GeometryCollection) factory.buildGeometry(geometries);
-		try {
-			return geometryCollection.union();
+		Geometry geometry = factory.buildGeometry(geometries);
+
+		/*if (geometry.getNumGeometries() > 1) {
+			GeometryCollection geometryCollection = (GeometryCollection) geometry;
+			Geometry unionedGeometry = geometryCollection.union();
+			validateGeometry(unionedGeometry, code);
+			return unionedGeometry;
+		}*/
+		System.out.println("No region collection for " + code);
+		return geometry;
+		/*try {
+			return geometryCollection.union().buffer(0.005);
 		} catch (Exception e) {
 			System.out.println("Error generating unioned shape");
 			return null;
-		}
+		}*/
 	}
 
 	private static void generateGeoJSONFiles() throws IOException {
 
 		Collection<Region> continents = GeoJSONGenerator.continents.values();
 		SimpleFeatureCollection continentFeatures = createFeatures(continents);
-		generateGeoJSONFile("continents-world", continentFeatures);
+		Collection<Region> subregions = GeoJSONGenerator.subregions.values();
+		SimpleFeatureCollection subregionFeatures = createFeatures(subregions);
 
+		DefaultFeatureCollection unifiedFeatures = new DefaultFeatureCollection();
+		unifiedFeatures.addAll(continentFeatures);
+		unifiedFeatures.addAll(subregionFeatures);
+
+		generateGeoJSONFile("world", unifiedFeatures, 0.2);
+/*
 		Collection<Region> subregions = GeoJSONGenerator.subregions.values();
 		SimpleFeatureCollection subregionFeatures = createFeatures(subregions);
 		generateGeoJSONFile("subregions-world", subregionFeatures);
-
+ */
+		/*
 		for (String continentCode: subregionsByContinents.keySet()) {
 			List<Region> subregionsForContinent = subregionsByContinents.get(continentCode);
 			SimpleFeatureCollection features = createFeatures(subregionsForContinent);
 			generateGeoJSONFile("subregions-continent-" + continentCode, features);
-		}
+		} */
 
 		for (String continentCode: countriesByContinents.keySet()) {
 			List<Region> countriesForContinent = countriesByContinents.get(continentCode);
 			SimpleFeatureCollection features = createFeatures(countriesForContinent);
-			generateGeoJSONFile("countries-continent-" + continentCode, features);
+			generateGeoJSONFile(continentCode, features, 0.1);
 		}
 
+		/*
 		for (String subregionCode: countriesBySubregions.keySet()) {
 			List<Region> countriesForSubregion = countriesBySubregions.get(subregionCode);
 			SimpleFeatureCollection features = createFeatures(countriesForSubregion);
 			generateGeoJSONFile("countries-subregion-" + subregionCode, features);
-		}
+		} */
 
 		for (String countryCode: regionsByCountry.keySet()) {
 			List<Region> regionsForCountry = regionsByCountry.get(countryCode);
 			SimpleFeatureCollection features = createFeatures(regionsForCountry);
-			generateGeoJSONFile("regions-" + countryCode, features);
+			generateGeoJSONFile(countryCode, features, 0.05);
 		}
 
 	}
 
-	private static void generateGeoJSONFile(String filename, SimpleFeatureCollection features) throws IOException
+	private static void generateGeoJSONFile(String filename, SimpleFeatureCollection features, double distanceTolerance) throws IOException
 	{
 		FeatureJSON feature = new FeatureJSON(new GeometryJSON(4));
-		FileWriter writer = new FileWriter("out/" + filename + ".json");
+		feature.setEncodeFeatureCollectionCRS(true);
+		feature.setEncodeFeatureCollectionBounds(true);
+		feature.setEncodeDistanceTolerance(true);
+		feature.setDistanceTolerance(distanceTolerance);
+
+		FileWriter writer = new FileWriter("C:/workspaces/trunk/non-prod/samples/AjaxWorld/WebContent/mapv2/data/" + filename + ".json");
 		feature.writeFeatureCollection(features, writer);
 	}
 
@@ -183,28 +258,38 @@ public class GeoJSONGenerator {
 		try {
 			while(iterator.hasNext()) {
 				SimpleFeature country = iterator.next();
-				String continent = country.getAttribute("continent").toString();
-				String subregion = country.getAttribute("subregion").toString();
+
+				String continentName = country.getAttribute("continent").toString();
+				String continentCode = continentNameToContinentCode.get(continentName);
+				continentCodeToContinentName.put(continentCode, continentName);
+
+				String subregionName = country.getAttribute("subregion").toString();
+				String subregionCode = subregionNameToSubregionCode.get(subregionName);
+				subregionCodeToSubregionName.put(subregionCode, subregionName);
+
 				String name = country.getAttribute("name").toString();
 				String code = country.getAttribute("iso_a2").toString();
-				// I don't care if it is already in the map since i just overwrite
-				// it with the same values anyway - no need for a check
-				subregionToContinent.put(subregion, continent);
 
-				Region region = new Region(code, name, RegionType.COUNTRY, continent);
-				region.setGeometry((Geometry)country.getDefaultGeometry());
+				if (continentCode != null) {
+					// I don't care if it is already in the map since i just overwrite
+					// it with the same values anyway - no need for a check
+					subregionToContinent.put(subregionCode, continentCode);
 
-				if (!countriesByContinents.containsKey(continent)) {
-					countriesByContinents.put(continent, new ArrayList<Region>());
+					Region region = new Region(code, name, RegionType.COUNTRY, continentCode);
+					region.setGeometry((Geometry)country.getDefaultGeometry());
+					region.setParentId(continentCode);
+
+					if (!countriesByContinents.containsKey(continentCode)) {
+						countriesByContinents.put(continentCode, new ArrayList<Region>());
+					}
+					countriesByContinents.get(continentCode).add(region);
+
+					if (!countriesBySubregions.containsKey(subregionCode)) {
+						countriesBySubregions.put(subregionCode, new ArrayList<Region>());
+					}
+					countriesBySubregions.get(subregionCode).add(region);
+					GeoJSONGenerator.countries.put(code, region);
 				}
-				countriesByContinents.get(continent).add(region);
-
-				if (!countriesBySubregions.containsKey(subregion)) {
-					countriesBySubregions.put(subregion, new ArrayList<Region>());
-				}
-				countriesBySubregions.get(subregion).add(region);
-				GeoJSONGenerator.countries.put(code, region);
-
 			}
 		} finally {
 			iterator.close();
@@ -227,8 +312,9 @@ public class GeoJSONGenerator {
 				if (country == null) {
 					System.out.println("no country found for " + countryCode);
 				} else {
-					Region region = new Region(code, name, RegionType.COUNTRY, countryCode, country.getContinentCode());
+					Region region = new Region(code, name, RegionType.REGION, countryCode, country.getContinentCode());
 					region.setGeometry((Geometry) admin1Region.getDefaultGeometry());
+					region.setParentId(countryCode);
 
 					if (!regionsByCountry.containsKey(countryCode)) {
 						regionsByCountry.put(countryCode, new ArrayList<Region>());
@@ -245,7 +331,7 @@ public class GeoJSONGenerator {
 	{
 		SimpleFeatureBuilder builder = new SimpleFeatureBuilder(getFeatureType());
 //		builder.set("id", region.getCode());
-		builder.set("parent_id", region.getCountryCode());
+		builder.set("parent_id", region.getParentId());
 		builder.set("region_type", region.getType().toString() );
 		builder.set("name", region.getName());
 		builder.set("geometry", region.getGeometry());
@@ -277,6 +363,15 @@ public class GeoJSONGenerator {
 		}
 
 		return outputFeatureType;
+	}
+
+	private static void validateGeometry(Geometry geometry, String code) {
+		IsValidOp validityOperation = new IsValidOp(geometry);
+		TopologyValidationError err = validityOperation.getValidationError();
+		if (err != null) {
+			System.out.println("Error found for region " + code);
+			System.out.println(err);
+		}
 	}
 
 }

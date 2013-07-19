@@ -3,10 +3,7 @@ package at.localhost.vectorworldmap.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.geotools.feature.simple.SimpleFeatureTypeImpl;
 import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -29,10 +26,13 @@ public class Region {
 			this.name = name;
 		}
 
+		@Override
 		public String toString() {
 			return name;
 		}
 	}
+
+	private String parentId;
 
 	private String name;
 
@@ -147,4 +147,13 @@ public class Region {
 		return this.features;
 	}
 
+	public void setParentId(String parentId)
+	{
+		this.parentId = parentId;
+	}
+
+	public String getParentId()
+	{
+		return parentId;
+	}
 }

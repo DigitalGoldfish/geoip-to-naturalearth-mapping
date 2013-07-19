@@ -263,8 +263,9 @@ public class PolygonBorderPreservingSimplifier
 						simplifiedPolygons.add(simplifiedPolygon);
 					} else {
 						// TODO: remove this message after testing
-						System.out.println("Polygone for feature " + feature.getAttribute("adm1_code").toString()
-								+ " is ommited because it is too small!");
+/*
+						System.out.println("Polygone for feature " + feature.getAttribute("name").toString()
+								+ " is ommited because it is too small!");*/
 					}
 				}
 
@@ -289,7 +290,7 @@ public class PolygonBorderPreservingSimplifier
 
 					// TODO: remove this message after testing
 					countOmmitedFeatures++;
-					System.out.println("Feature " + feature.getAttribute("adm1_code").toString()
+					System.out.println("Feature " + feature.getAttribute("name").toString()
 							+ "is ommited because it is too small!");
 				}
 			}
