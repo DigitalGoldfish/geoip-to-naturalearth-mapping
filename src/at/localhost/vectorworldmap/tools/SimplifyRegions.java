@@ -33,6 +33,7 @@ public class SimplifyRegions
 	public static void main(String[] args)
 	{
 		try {
+			System.out.println("start processing");
 			// open feature source
 			initShapeFileDataSources();
 			simplify(distanceTolerances);
@@ -53,7 +54,7 @@ public class SimplifyRegions
 			SimpleFeatureCollection result = simplifier.getResultFeatureCollection();
 			SHPFileUtils.writeResultToFile(countryFeatureSource.getSchema(), result, generateFilename(ADMIN0_FILENAME, distanceTolerance));
 		}
-
+/*
 		features = regionFeatureSource.getFeatures();
 		simplifier = new PolygonBorderPreservingSimplifier(features);
 		for(double distanceTolerance:distanceTolerances) {
@@ -61,6 +62,7 @@ public class SimplifyRegions
 			SimpleFeatureCollection result = simplifier.getResultFeatureCollection();
 			SHPFileUtils.writeResultToFile(regionFeatureSource.getSchema(), result, generateFilename(ADMIN1_FILENAME, distanceTolerance));
 		}
+*/
 	}
 
 	private static String generateFilename(String filename, double distanceTolerance) {

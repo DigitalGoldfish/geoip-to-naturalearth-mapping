@@ -98,6 +98,8 @@ public class PolygonBorderPreservingSimplifier
 	 */
 	private Map<String, LineString> simplifiedLines;
 
+	private Map<String, LineString> originalLines;
+
 
 	/**
 	 * List of points that are already fixed and cannot be removed or simplified.
@@ -225,6 +227,7 @@ public class PolygonBorderPreservingSimplifier
 	public SimpleFeatureCollection getResultFeatureCollection()
 	{
 		this.simplifiedLines = new HashMap<String, LineString>();
+		this.originalLines = new HashMap<String, LineString>();
 		this.pivotPoints = new ArrayList<String>();
 
 		return simplify();
@@ -248,6 +251,7 @@ public class PolygonBorderPreservingSimplifier
 		try {
 			while (featuresIterator.hasNext()) {
 				SimpleFeature feature = featuresIterator.next();
+				System.out.println("\nProcessing Feature " + feature.getAttribute("name").toString());
 
 				// get all polygons of the currently processed feature
 				List<Polygon> polygons = extractPolygons(feature);
@@ -397,7 +401,7 @@ public class PolygonBorderPreservingSimplifier
 		// without further ado and add it to the list of simplified lines.
 		if (!isPivot) {
 			LineString line = geometryFactory.createLineString(pointToCoordinates(points));
-			LineString simplifiedLine = (LineString) TopologyPreservingSimplifier.simplify(line, distanceTolerance);
+			LineString simplifiedLine = simplifyLine(line, distanceTolerance);
 			if (simplifiedLine.getNumPoints() <= 2) {
 				return null;
 			}
@@ -405,6 +409,7 @@ public class PolygonBorderPreservingSimplifier
 			// TODO: is this necessary to add it to the list of recordeds strings?
 			// We already know that there are no intersections ... so what is the point?
 			simplifiedLines.put(simpleLineKey, simplifiedLine);
+			originalLines.put(simpleLineKey, line);
 			pivotPoints.add(generateStringIdForPoint(points.get(0)));
 			pivotPoints.add(generateStringIdForPoint(points.get(points.size() - 1)));
 			return simplifiedLine;
@@ -449,9 +454,11 @@ public class PolygonBorderPreservingSimplifier
 					}
 				} else {
 					LineString line = geometryFactory.createLineString(pointToCoordinates(pointsForLine));
-					LineString simplifiedLine = (LineString) TopologyPreservingSimplifier.simplify(line, distanceTolerance);
+					LineString simplifiedLine = simplifyLine(line, distanceTolerance);
+
 					lineKey = buildLineKey(pointsForLine);
 					simplifiedLines.put(lineKey, simplifiedLine);
+					originalLines.put(lineKey, line);
 					pivotPoints.add(generateStringIdForPoint(pointsForLine.get(0)));
 					pivotPoints.add(generateStringIdForPoint(pointsForLine.get(pointsForLine.size()-1)));
 					pointsForLine = new ArrayList<Point>();
@@ -475,6 +482,44 @@ public class PolygonBorderPreservingSimplifier
 		// simplifiedLinePoints.add(simplifiedLinePoints.get(0));
 
 		return geometryFactory.createLineString(pointToCoordinates(simplifiedLinePoints));
+	}
+
+
+	/**
+	 * @param line
+	 * @return
+	 */
+	private LineString simplifyLine(LineString line, double distanceTolerance)
+	{
+		// Simplify line with the current distanceTolerance
+		LineString simplifiedLine = (LineString) TopologyPreservingSimplifier.simplify(line, distanceTolerance);
+
+		// check if there is a line that crosses the newly simplified line
+		for (String simplifiedLinesKey: simplifiedLines.keySet()) {
+			LineString existingSimplifiedLine = simplifiedLines.get(simplifiedLinesKey);
+			boolean crosses = existingSimplifiedLine.crosses(simplifiedLine) && !existingSimplifiedLine.touches(simplifiedLine);
+			double newDistanceTolerance = distanceTolerance;
+			while (crosses) {
+				// we have a crossing line, we need to use less tolerance for both the original line and the current line
+				newDistanceTolerance = newDistanceTolerance/2;
+				System.out.println("Trying with tolerance " + newDistanceTolerance);
+				LineString originalCrossingLineString = originalLines.get(simplifiedLinesKey);
+				LineString newSimplifiedCrossingLineString = (LineString) TopologyPreservingSimplifier.simplify(originalCrossingLineString, newDistanceTolerance);
+				simplifiedLine = (LineString) TopologyPreservingSimplifier.simplify(line, newDistanceTolerance);
+
+				crosses = newSimplifiedCrossingLineString.crosses(simplifiedLine) && !newSimplifiedCrossingLineString.touches(simplifiedLine);
+				if (!crosses) {
+					System.out.println("Solved problem with tolerance " + newDistanceTolerance);
+					simplifiedLines.put(simplifiedLinesKey, newSimplifiedCrossingLineString);
+				} else if (newDistanceTolerance < 0.00000001){
+					System.out.println("Could not resolve crossing lines, using original line!");
+					simplifiedLines.put(simplifiedLinesKey, originalCrossingLineString);
+					return line;
+				}
+			}
+
+		}
+		return simplifiedLine;
 	}
 
 
