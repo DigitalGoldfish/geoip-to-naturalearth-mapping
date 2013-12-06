@@ -268,6 +268,8 @@ public class MaxMindCSVFileReader {
 		} while (currentlyProcessedline != null);
 		fileReader.close();
 
+
+
 		return regions;
 	}
 

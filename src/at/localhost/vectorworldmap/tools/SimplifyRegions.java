@@ -25,7 +25,7 @@ public class SimplifyRegions
 
 	private static int countOmmitedFeatures = 0;
 
-	private static double[] distanceTolerances = {0.05/* , 0.01, 0.005, 0.001*/};
+	private static double[] distanceTolerances = {0.1, /*0.05 , 0.01, 0.005, 0.001*/};
 
 	/**
 	 * @param args
@@ -54,7 +54,7 @@ public class SimplifyRegions
 			SimpleFeatureCollection result = simplifier.getResultFeatureCollection();
 			SHPFileUtils.writeResultToFile(countryFeatureSource.getSchema(), result, generateFilename(ADMIN0_FILENAME, distanceTolerance));
 		}
-/*
+
 		features = regionFeatureSource.getFeatures();
 		simplifier = new PolygonBorderPreservingSimplifier(features);
 		for(double distanceTolerance:distanceTolerances) {
@@ -62,7 +62,7 @@ public class SimplifyRegions
 			SimpleFeatureCollection result = simplifier.getResultFeatureCollection();
 			SHPFileUtils.writeResultToFile(regionFeatureSource.getSchema(), result, generateFilename(ADMIN1_FILENAME, distanceTolerance));
 		}
-*/
+
 	}
 
 	private static String generateFilename(String filename, double distanceTolerance) {

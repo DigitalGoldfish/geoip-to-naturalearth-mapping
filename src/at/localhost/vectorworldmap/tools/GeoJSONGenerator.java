@@ -33,11 +33,17 @@ import com.vividsolutions.jts.operation.valid.TopologyValidationError;
 
 public class GeoJSONGenerator {
 
-//	 private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "resources/naturalearth/v20/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp";
-//	 private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v30/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp";
+	 /**
+	 *
+	 */
+	//private static final String OUTPUT_PATH = "c:/workspaces/apm/apm/ui/components/com.compuware.apm.webui.gwt.monitoring/src/main/resources/assets/map/data/";
+	private static final String OUTPUT_PATH = "d:/geojson/";
 
-	private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "out/shp/simplified_features_admin0_tolerance_0_05.shp";
-	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "out/shp/simplified_features_admin1_tolerance_0_05.shp";
+	private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "resources/naturalearth/v20/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp";
+	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v30/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp";
+
+	// private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "out/shp/simplified_features_admin0_tolerance_0_05.shp";
+	//private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "out/shp/simplified_features_admin1_tolerance_0_05.shp";
 
 	private static SimpleFeatureSource countryFeatureSource;
 	private static SimpleFeatureSource regionFeatureSource;
@@ -61,13 +67,13 @@ public class GeoJSONGenerator {
 	private static final Map<String, String> subregionToContinent = new HashMap<String, String>();
 
 	static {
-		continentNameToContinentCode.put("Africa", "F");
-		continentNameToContinentCode.put("Asia", "A");
+		continentNameToContinentCode.put("Africa", "CONT_AF");
+		continentNameToContinentCode.put("Asia", "CONT_AS");
 		continentNameToContinentCode.put("Antarctica", null); // we ignore Antarctica
-		continentNameToContinentCode.put("Europe", "E");
-		continentNameToContinentCode.put("North America", "N");
-		continentNameToContinentCode.put("South America", "S");
-		continentNameToContinentCode.put("Oceania", "O");
+		continentNameToContinentCode.put("Europe", "CONT_EU");
+		continentNameToContinentCode.put("North America", "CONT_NA");
+		continentNameToContinentCode.put("South America", "CONT_SA");
+		continentNameToContinentCode.put("Oceania", "CONT_OC");
 		continentNameToContinentCode.put("Seven seas (open ocean)", /*"P"*/ null);
 
 		subregionNameToSubregionCode.put("Middle Africa", "MAF");
@@ -116,7 +122,7 @@ public class GeoJSONGenerator {
 			if (geometry != null) {
 				Region continent = new Region(continentCode, continentCodeToContinentName.get(continentCode), RegionType.CONTINENT, continentCode);
 				continent.setGeometry(geometry);
-				continent.setParentId("world");
+				continent.setParentId("WORLD");
 				continents.put(continentCode, continent);
 			} else {
 				System.out.println("Error generating shape for " + continentCode);
@@ -176,6 +182,7 @@ public class GeoJSONGenerator {
 
 	private static void generateGeoJSONFiles() throws IOException {
 
+		/*
 		Collection<Region> continents = GeoJSONGenerator.continents.values();
 		SimpleFeatureCollection continentFeatures = createFeatures(continents);
 		Collection<Region> subregions = GeoJSONGenerator.subregions.values();
@@ -183,9 +190,10 @@ public class GeoJSONGenerator {
 
 		DefaultFeatureCollection unifiedFeatures = new DefaultFeatureCollection();
 		unifiedFeatures.addAll(continentFeatures);
-		unifiedFeatures.addAll(subregionFeatures);
+		// unifiedFeatures.addAll(subregionFeatures);
 
-		generateGeoJSONFile("world", unifiedFeatures, 0.2);
+		generateGeoJSONFile("WORLD", unifiedFeatures, 0.2);
+		*/
 /*
 		Collection<Region> subregions = GeoJSONGenerator.subregions.values();
 		SimpleFeatureCollection subregionFeatures = createFeatures(subregions);
@@ -198,11 +206,13 @@ public class GeoJSONGenerator {
 			generateGeoJSONFile("subregions-continent-" + continentCode, features);
 		} */
 
+		/*
 		for (String continentCode: countriesByContinents.keySet()) {
 			List<Region> countriesForContinent = countriesByContinents.get(continentCode);
 			SimpleFeatureCollection features = createFeatures(countriesForContinent);
 			generateGeoJSONFile(continentCode, features, 0.1);
 		}
+		*/
 
 		/*
 		for (String subregionCode: countriesBySubregions.keySet()) {
@@ -211,27 +221,61 @@ public class GeoJSONGenerator {
 			generateGeoJSONFile("countries-subregion-" + subregionCode, features);
 		} */
 
+
+
 		for (String countryCode: regionsByCountry.keySet()) {
+
 			List<Region> regionsForCountry = regionsByCountry.get(countryCode);
 			SimpleFeatureCollection features = createFeatures(regionsForCountry);
 			generateGeoJSONFile(countryCode, features, 0.05);
+
+			/*
+			System.out.println(" ");
+			System.out.println("Creating json file for " + countryCode);
+			System.out.println("========================== ");
+			List<Region> regionsForCountry = regionsByCountry.get(countryCode);
+			DefaultFeatureCollection features = createFeatures(regionsForCountry);
+			ReferencedEnvelope bounds = features.getBounds();
+
+			bounds.expandBy(bounds.getWidth() * 0.15, bounds.getHeight() * 0.15);
+
+			DefaultFeatureCollection countryFeatures = new DefaultFeatureCollection();
+			try {
+				for (String continentCode: countriesByContinents.keySet()) {
+					for (Region country: countriesByContinents.get(continentCode)) {
+						//if (!country.getCountryCode().equals(countryCode)) {
+							System.out.println("Country " + country.getName() + " is close to " + countryCode);
+							SimpleFeature feature = createSimpleFeature(country);
+							if (bounds.intersects(feature.getBounds())) {
+								SimpleFeature clippedFeature = createSimpleClippedFeature(country, bounds);
+								countryFeatures.add(clippedFeature);
+							}
+						//}
+					}
+				}
+
+				generateGeoJSONFile(countryCode, countryFeatures, 0.05);
+			} catch (Exception e) {
+				System.out.println("Exception " + e.getMessage() + " while processing " + countryCode);
+			}*/
+
 		}
 
 	}
 
 	private static void generateGeoJSONFile(String filename, SimpleFeatureCollection features, double distanceTolerance) throws IOException
 	{
-		FeatureJSON feature = new FeatureJSON(new GeometryJSON(4));
+		FeatureJSON feature = new FeatureJSON(new GeometryJSON(8));
 		feature.setEncodeFeatureCollectionCRS(true);
 		feature.setEncodeFeatureCollectionBounds(true);
 		feature.setEncodeDistanceTolerance(true);
 		feature.setDistanceTolerance(distanceTolerance);
 
-		FileWriter writer = new FileWriter("C:/workspaces/trunk/non-prod/samples/AjaxWorld/WebContent/mapv2/data/" + filename + ".json");
+		FileWriter writer = new FileWriter(OUTPUT_PATH + filename + ".json");
 		feature.writeFeatureCollection(features, writer);
 	}
 
-	private static SimpleFeatureCollection createFeatures(Collection<Region> regions) {
+	private static DefaultFeatureCollection createFeatures(Collection<Region> regions) {
 		DefaultFeatureCollection features = new DefaultFeatureCollection();
 		for (Region region : regions) {
 			SimpleFeature feature = createSimpleFeature(region);
@@ -269,6 +313,8 @@ public class GeoJSONGenerator {
 
 				String name = country.getAttribute("name").toString();
 				String code = country.getAttribute("iso_a2").toString();
+
+				validateGeometry((Geometry) country.getDefaultGeometry(), country.getAttribute("iso_a2").toString());
 
 				if (continentCode != null) {
 					// I don't care if it is already in the map since i just overwrite
@@ -330,12 +376,31 @@ public class GeoJSONGenerator {
 	private static SimpleFeature createSimpleFeature(Region region)
 	{
 		SimpleFeatureBuilder builder = new SimpleFeatureBuilder(getFeatureType());
-//		builder.set("id", region.getCode());
 		builder.set("parent_id", region.getParentId());
 		builder.set("region_type", region.getType().toString() );
 		builder.set("name", region.getName());
 		builder.set("geometry", region.getGeometry());
 
+
+		SimpleFeature newFeature = builder.buildFeature(region.getCode());
+
+		return newFeature;
+	}
+
+	private static SimpleFeature createSimpleClippedFeature(Region region, com.vividsolutions.jts.geom.Envelope envelope)
+	{
+
+		SimpleFeatureBuilder builder = new SimpleFeatureBuilder(getFeatureType());
+		builder.set("parent_id", region.getParentId());
+		builder.set("region_type", region.getType().toString() );
+		builder.set("name", region.getName());
+
+		GeometryFactory factory = new GeometryFactory();
+		Geometry envelopeGeometry = factory.toGeometry(envelope);
+
+		Geometry intersection = envelopeGeometry.intersection(region.getGeometry());
+
+		builder.set("geometry", intersection);
 
 		SimpleFeature newFeature = builder.buildFeature(region.getCode());
 

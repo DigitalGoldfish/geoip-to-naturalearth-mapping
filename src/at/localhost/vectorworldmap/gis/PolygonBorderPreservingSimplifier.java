@@ -23,6 +23,8 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.operation.valid.IsValidOp;
+import com.vividsolutions.jts.operation.valid.TopologyValidationError;
 import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
 
 /**
@@ -272,6 +274,39 @@ public class PolygonBorderPreservingSimplifier
 								+ " is ommited because it is too small!");*/
 					}
 				}
+			}
+
+			// now all features are processed but we still need to get rid of crossing lines
+			processCrossingLines(this.distanceTolerance);
+			result = new DefaultFeatureCollection();
+			featuresIterator = features.features();
+
+			// now we process the polygons again this time getting the polygons with hopefully
+			// no crossing lines
+			while (featuresIterator.hasNext()) {
+
+				SimpleFeature feature = featuresIterator.next();
+				System.out.println("\nProcessing Feature " + feature.getAttribute("name").toString());
+
+				// get all polygons of the currently processed feature
+				List<Polygon> polygons = extractPolygons(feature);
+				List<Polygon> simplifiedPolygons = new ArrayList<Polygon>(
+						polygons.size());
+
+				// iterate trough polygons of feature and simplify each polygon
+				// separately
+				for (Polygon polygon: polygons) {
+					// simplify polygon
+					Polygon simplifiedPolygon = simplifyPolygon(polygon);
+					if (simplifiedPolygon != null) {
+						simplifiedPolygons.add(simplifiedPolygon);
+					} else {
+						// TODO: remove this message after testing
+/*
+						System.out.println("Polygone for feature " + feature.getAttribute("name").toString()
+								+ " is ommited because it is too small!");*/
+					}
+				}
 
 				if (simplifiedPolygons.size() > 0) {
 					// create feature for simplified shape and append it to result
@@ -287,6 +322,8 @@ public class PolygonBorderPreservingSimplifier
 					SimpleFeature simplifiedFeature = cloneSimpleFeature(feature);
 					simplifiedFeature.setDefaultGeometry(shape);
 					result.add(simplifiedFeature);
+
+					validateGeometry(shape, simplifiedFeature.getAttribute("name").toString());
 				} else {
 					// For this feature no shape is left after simplification
 					//  => this can happen if topology isn't preserved.
@@ -401,18 +438,19 @@ public class PolygonBorderPreservingSimplifier
 		// without further ado and add it to the list of simplified lines.
 		if (!isPivot) {
 			LineString line = geometryFactory.createLineString(pointToCoordinates(points));
-			LineString simplifiedLine = simplifyLine(line, distanceTolerance);
-			if (simplifiedLine.getNumPoints() <= 2) {
-				return null;
-			}
 			String simpleLineKey = generateStringIdForLine(line);
-			// TODO: is this necessary to add it to the list of recordeds strings?
-			// We already know that there are no intersections ... so what is the point?
-			simplifiedLines.put(simpleLineKey, simplifiedLine);
-			originalLines.put(simpleLineKey, line);
-			pivotPoints.add(generateStringIdForPoint(points.get(0)));
-			pivotPoints.add(generateStringIdForPoint(points.get(points.size() - 1)));
-			return simplifiedLine;
+			if (!simplifiedLines.containsKey(simpleLineKey)) {
+				LineString simplifiedLine = simplifyLine(line, distanceTolerance);
+				if (simplifiedLine.getNumPoints() <= 2) {
+					return null;
+				}
+
+				simplifiedLines.put(simpleLineKey, simplifiedLine);
+				originalLines.put(simpleLineKey, line);
+				pivotPoints.add(generateStringIdForPoint(points.get(0)));
+				pivotPoints.add(generateStringIdForPoint(points.get(points.size() - 1)));
+			}
+			return simplifiedLines.get(simpleLineKey);
 		}
 
 		// Now the more complicated case ... at least some segments of the line overlap with other segments:
@@ -498,12 +536,18 @@ public class PolygonBorderPreservingSimplifier
 		for (String simplifiedLinesKey: simplifiedLines.keySet()) {
 			LineString existingSimplifiedLine = simplifiedLines.get(simplifiedLinesKey);
 			boolean crosses = existingSimplifiedLine.crosses(simplifiedLine) && !existingSimplifiedLine.touches(simplifiedLine);
-			double newDistanceTolerance = distanceTolerance;
+			if (crosses) {
+				System.out.println("New simplifiedLine crosses line " + simplifiedLinesKey);
+			}
+			/* double newDistanceTolerance = distanceTolerance;
 			while (crosses) {
 				// we have a crossing line, we need to use less tolerance for both the original line and the current line
 				newDistanceTolerance = newDistanceTolerance/2;
 				System.out.println("Trying with tolerance " + newDistanceTolerance);
+
+
 				LineString originalCrossingLineString = originalLines.get(simplifiedLinesKey);
+
 				LineString newSimplifiedCrossingLineString = (LineString) TopologyPreservingSimplifier.simplify(originalCrossingLineString, newDistanceTolerance);
 				simplifiedLine = (LineString) TopologyPreservingSimplifier.simplify(line, newDistanceTolerance);
 
@@ -516,12 +560,68 @@ public class PolygonBorderPreservingSimplifier
 					simplifiedLines.put(simplifiedLinesKey, originalCrossingLineString);
 					return line;
 				}
-			}
+			} */
 
 		}
 		return simplifiedLine;
 	}
 
+	private void processCrossingLines(double distanceTolerance) {
+		boolean crossingLinesFound = false;
+		int numberOfCrossingNonOriginalLinesFound = 0;
+		System.out.println("Postprocessing for crossing lines");
+		do {
+			crossingLinesFound = false;
+			numberOfCrossingNonOriginalLinesFound = 0;
+			for (String simplifiedLineKey1: simplifiedLines.keySet()) {
+				for (String simplifiedLineKey2: simplifiedLines.keySet()) {
+					if (simplifiedLineKey1.equals(simplifiedLineKey2)) {
+						continue;
+					}
+					LineString simplifiedLine1 = simplifiedLines.get(simplifiedLineKey1);
+					LineString simplifiedLine2 = simplifiedLines.get(simplifiedLineKey2);
+					boolean crosses = simplifiedLine1.crosses(simplifiedLine2) && !simplifiedLine1.touches(simplifiedLine2);
+
+					if (crosses) {
+						System.out.println("Found crossing lines");
+						crossingLinesFound = true;
+						double newDistanceTolerance = distanceTolerance;
+
+						LineString originalLine1 = originalLines.get(simplifiedLineKey1);
+						LineString originalLine2 = originalLines.get(simplifiedLineKey2);
+
+						if (originalLine1.equals(simplifiedLine1) && originalLine2.equals(simplifiedLine2)) {
+
+						} else {
+							crossingLinesFound = true;
+							numberOfCrossingNonOriginalLinesFound++;
+							while (crosses) {
+								newDistanceTolerance = newDistanceTolerance/2;
+								System.out.println("Trying with tolerance " + newDistanceTolerance);
+
+								simplifiedLine1 = (LineString) TopologyPreservingSimplifier.simplify(originalLine1, newDistanceTolerance);
+								simplifiedLine2 = (LineString) TopologyPreservingSimplifier.simplify(originalLine2, newDistanceTolerance);
+
+								crosses = simplifiedLine1.crosses(simplifiedLine2) && !simplifiedLine1.touches(simplifiedLine2);
+								if (!crosses) {
+									System.out.println("Solved problem with tolerance " + newDistanceTolerance);
+									simplifiedLines.put(simplifiedLineKey1, simplifiedLine1);
+									simplifiedLines.put(simplifiedLineKey2, simplifiedLine2);
+								}  else if (newDistanceTolerance < 0.00000001){
+									System.out.println("Could not resolve crossing lines, using original line!");
+									simplifiedLines.put(simplifiedLineKey1, originalLine1);
+									simplifiedLines.put(simplifiedLineKey2, originalLine2);
+									crosses = false;
+								}
+							}
+						}
+					}
+				}
+			}
+			System.out.println("Number of crossing lines found: " + numberOfCrossingNonOriginalLinesFound);
+		} while (crossingLinesFound);
+
+	}
 
 	/**
 	 *
@@ -782,6 +882,15 @@ public class PolygonBorderPreservingSimplifier
 
 		public int get() {
 			return value;
+		}
+	}
+
+	private static void validateGeometry(Geometry geometry, String code) {
+		IsValidOp validityOperation = new IsValidOp(geometry);
+		TopologyValidationError err = validityOperation.getValidationError();
+		if (err != null) {
+			System.out.println("Error found for region " + code);
+			System.out.println(err);
 		}
 	}
 

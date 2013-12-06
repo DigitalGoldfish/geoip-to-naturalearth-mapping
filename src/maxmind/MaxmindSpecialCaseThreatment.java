@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.omg.CORBA.portable.RemarshalException;
-
 public class MaxmindSpecialCaseThreatment {
 
 	public static final List<String> countriesWithoutRegions = new ArrayList<String>();
@@ -287,6 +285,106 @@ public class MaxmindSpecialCaseThreatment {
 		staticMappingsFromAdmin1CodeToMaxMindCode.put("FIN-3191", "FI-15"); // Finland Proper
 		staticMappingsFromAdmin1CodeToMaxMindCode.put("FIN-3192", "FI-15"); // Satakunta
 		staticMappingsFromAdmin1CodeToMaxMindCode.put("FIN-3193", "FI-13"); // Uusimaa
+
+		// France
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5262", "FR-B9"); //	Ain
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5263", "FR-B6");  //	Aisne
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5264", "FR-98");  //	Allier
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5265", "FR-B8");  //	Alpes-de-Haute-Provence
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5266", "FR-B8");  //	Alpes-Maritimes
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5267", "FR-B9");  //	Ardeche
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5268", "FR-A4");  //	Ardennes
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5269", "FR-B3");  //	Ariege
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5270", "FR-A4");  //	Aube
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5271", "FR-A9");  //	Aude
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5272", "FR-B3");  //	Aveyron
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5273", "FR-C1");  //	Bas-Rhin
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5274", "FR-B8");  //	Bouches-du-Rhone
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5275", "FR-99");  //	Calvados
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5276", "FR-98");  //	Cantal
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5277", "FR-B7");  //	Charente
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5278", "FR-B7");  //	Charente-Maritime
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5279", "FR-A3");  //	Cher
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5280", "FR-B1");  //	Corraze
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5281", "FR-A5");  //	Corse-du-Sud
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5282", "FR-A1");  //	Cote-d'Or
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5283", "FR-A2");  //	Cotes-d'Armor
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5284", "FR-B1");  //	Creuse
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5285", "FR-B7");  //	Deux-Savres
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5286", "FR-97");  //	Dordogne
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5287", "FR-A6");  //	Doubs
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5288", "FR-B9");  //	Drame
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5289", "FR-A8");  //	Essonne
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5290", "FR-A7");  //	Eure
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5291", "FR-A3");  //	Eure-et-Loir
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5292", "FR-A2");  //	Finistere
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5293", "FR-A9");  //	Gard
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5294", "FR-B3");  //	Gers
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5295", "FR-97");  //	Gironde
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5296", "FR-C1");  //	Haute-Rhin
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5297", "FR-A5");  //	Haute-Corse
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5298", "FR-B3");  //	Haute-Garonne
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5299", "FR-98");  //	Haute-Loire
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5300", "FR-A4");  //	Haute-Marne
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5301", "FR-A6"); //	Haute-Saône
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5302", "FR-B9");  //	Haute-Savoie
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5303", "FR-B1");  //	Haute-Vienne
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5304", "FR-B8");  //	Hautes-Alpes
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5305", "FR-B3");  //	Hautes-Pyranaes
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5306", "FR-A8");  //	Hauts-de-Seine
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5307", "FR-A9");  //	Herault
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5308", "FR-A2");  //	Ille-et-Vilaine
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5309", "FR-A3");  //	Indre
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5310", "FR-A3");  //	Indre-et-Loire
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5311", "FR-B9");  //	Isre
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5312", "FR-A6");  //	Jura
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5313", "FR-97");  //	Landes
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5314", "FR-A3");  //	Loir-et-Cher
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5315", "FR-B9");  //	Loire
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5316", "FR-B5");  //	Loire-Atlantique
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5317", "FR-A3");  //	Loiret
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5318", "FR-B3");  //	Lot
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5319", "FR-97");  //	Lot-et-Garonne
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5320", "FR-A9");  //	Lozare
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5321", "FR-B5");  //	Maine-et-Loire
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5322", "FR-99");  //	Manche
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5323", "FR-A4");  //	Marne
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5324", "FR-B5");  //	Mayenne
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5325", "FR-B2");  //	Meurhe-et-Moselle
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5326", "FR-B2");  //	Meuse
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5327", "FR-A2");  //	Morbihan
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5328", "FR-B2");  //	Moselle
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5329", "FR-A1");  //	Nievre
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5330", "FR-B4");  //	Nord
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5331", "FR-B6");  //	Oise
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5332", "FR-99");  //	Orne
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5333", "FR-A8");  //	Paris
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5334", "FR-B4");  //	Pas-de-Calais
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5335", "FR-98");  //	Puy-de-Dome
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5336", "FR-97");  //	Pyranaes-Atlantiques
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5337", "FR-A9");  //	Pyranaes-Orientales
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5338", "FR-B9");  //	Rhone
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5339", "FR-A1");  //	Saone-et-Loire
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5340", "FR-B5");  //	Sarthe
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5341", "FR-B9");  //	Savoie
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5342", "FR-A8");  //	Seien-et-Marne
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5343", "FR-A7");  //	Seine-Maritime
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5344", "FR-A8");  //	Seine-Saint-Denis
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5345", "FR-B6");  //	Somme
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5346", "FR-B3");  //	Tarn
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5347", "FR-B3");  //	Tarn-et-Garonne
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5348", "FR-A6");  //	Territoire de Belfort
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5349", "FR-A8");  //	Val-d'Oise
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5350", "FR-A8");  //	Val-de-Marne
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5351", "FR-B8");  //	Var
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5352", "FR-B8");  //	Vaucluse
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5353", "FR-B5");  //	Vendre
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5354", "FR-B7");  //	Vienne
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5355", "FR-B2");  //	Vosges
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5356", "FR-A1");  //	Yonne
+		staticMappingsFromAdmin1CodeToMaxMindCode.put("FRA-5357", "FR-A8");  // Yvelines
+
+
 
 		// FI-01 - Aland - separate state with separate admin 1 regions
 		staticMappingsFromAdmin1CodeToMaxMindCode.put("ALD-3137", "FI-01");

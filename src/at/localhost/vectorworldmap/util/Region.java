@@ -15,10 +15,10 @@ import com.vividsolutions.jts.geom.Geometry;
 public class Region {
 
 	public enum RegionType {
-		CONTINENT("continent"),
-		SUBREGION("subregion"),
-		COUNTRY("country"),
-		REGION("region");
+		CONTINENT("CONTINENT"),
+		SUBREGION("SUBREGION"),
+		COUNTRY("COUNTRY"),
+		REGION("REGION");
 
 		private final String name;
 
@@ -50,7 +50,7 @@ public class Region {
 
 	private boolean mappable = false;
 
-	// private SimpleFeature feature;
+	private SimpleFeature feature;
 
 	private List<SimpleFeature> features = new ArrayList<SimpleFeature>();
 
@@ -140,6 +140,14 @@ public class Region {
 
 	public void addFeature(SimpleFeature feature) {
 		this.features.add(feature);
+	}
+
+	public void setFeature(SimpleFeature feature) {
+		this.feature = feature;
+	}
+
+	public SimpleFeature getFeature() {
+		return this.feature;
 	}
 
 	public List<SimpleFeature> getFeatures()
