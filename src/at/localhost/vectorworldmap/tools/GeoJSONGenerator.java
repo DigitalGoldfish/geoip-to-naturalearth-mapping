@@ -37,13 +37,22 @@ public class GeoJSONGenerator {
 	 *
 	 */
 	//private static final String OUTPUT_PATH = "c:/workspaces/apm/apm/ui/components/com.compuware.apm.webui.gwt.monitoring/src/main/resources/assets/map/data/";
-	private static final String OUTPUT_PATH = "d:/geojson/";
+//	private static final String OUTPUT_PATH = "d:/geojson/";
+	private static final String OUTPUT_PATH = "C:/Node/Data/GeoJSON-test/";
 
 	private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "resources/naturalearth/v20/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp";
 	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v30/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp";
 
+    // Paul changed to ...
+//	private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "C:/Node/Data/shapefiles-old/country/50000/GB.shp";
+
+
 	// private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "out/shp/simplified_features_admin0_tolerance_0_05.shp";
 	//private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "out/shp/simplified_features_admin1_tolerance_0_05.shp";
+
+	// old instances of the shp files had attributes in lower case
+	// new one we need to update to uppercase
+	private static boolean convertToUpperCase = false;
 
 	private static SimpleFeatureSource countryFeatureSource;
 	private static SimpleFeatureSource regionFeatureSource;
@@ -303,18 +312,27 @@ public class GeoJSONGenerator {
 			while(iterator.hasNext()) {
 				SimpleFeature country = iterator.next();
 
-				String continentName = country.getAttribute("continent").toString();
+				String continentName = country.getAttribute(UCase("continent")).toString();
 				String continentCode = continentNameToContinentCode.get(continentName);
 				continentCodeToContinentName.put(continentCode, continentName);
 
-				String subregionName = country.getAttribute("subregion").toString();
+				String subregionName = country.getAttribute(UCase("subregion")).toString();
 				String subregionCode = subregionNameToSubregionCode.get(subregionName);
 				subregionCodeToSubregionName.put(subregionCode, subregionName);
 
-				String name = country.getAttribute("name").toString();
-				String code = country.getAttribute("iso_a2").toString();
+				String name = country.getAttribute(UCase("name")).toString();
+				String code = country.getAttribute(UCase("iso_a2")).toString();
 
-				validateGeometry((Geometry) country.getDefaultGeometry(), country.getAttribute("iso_a2").toString());
+				validateGeometry((Geometry) country.getDefaultGeometry(), country.getAttribute(UCase("iso_a2")).toString());
+
+	            /**
+                 * In the latest shp file FR has code -99 we need to switch this to FR
+                 */
+              	if (name.compareTo("France")==0 && (code.compareTo("-99")==0)) {
+              		// force the code to be FR for some unknown reason its coming back as -99 and messing up
+              		code = "FR";
+              	}
+
 
 				if (continentCode != null) {
 					// I don't care if it is already in the map since i just overwrite
@@ -438,5 +456,20 @@ public class GeoJSONGenerator {
 			System.out.println(err);
 		}
 	}
+
+    /**
+     * The original shp files downloaded from naturalearthdata.com had fields in lower case
+     * however they are now in upper case.  Use this method to control the expected case based on the convertToUpperCase flag set at the top of the class
+     * @param s
+     * @return
+     */
+    private static String UCase( String s ) {
+
+    	if (convertToUpperCase) {
+    		return s.toUpperCase();
+    	}
+    	return s;
+
+    }
 
 }
