@@ -21,6 +21,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 
+import at.localhost.vectorworldmap.util.MakeFolder;
 import at.localhost.vectorworldmap.util.Region;
 import at.localhost.vectorworldmap.util.Region.RegionType;
 import at.localhost.vectorworldmap.util.SHPFileUtils;
@@ -34,10 +35,22 @@ import com.vividsolutions.jts.operation.valid.TopologyValidationError;
 
 public class ShapeFileGenerator {
 
-    private static final String OUTPUT_PATH = "d:/GitHub/map/input/";
+	// pathing modified to allow reading in shp files from nonn project folder
 
-    private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "resources/naturalearth/v20/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp";
-    private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v30/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces_maxmind1386079801077.shp";
+//    private static final String OUTPUT_PATH = "d:/GitHub/map/input/";
+    private static final String OUTPUT_PATH = "C:/Node/Data/shapefiles-new/";
+
+//    private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "resources/naturalearth/v20/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp";
+//    private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v30/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces_maxmind1386079801077.shp";
+//    private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v30/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces_maxmind.shp";
+
+    // Paul changed to ...
+	private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "C:/Node/Data/shp/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp";
+	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "C:/Node/Data/shp/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp";
+
+	// old instances of the shp files had attributes in lower case
+	// Flag to allow us to run either as new format or old format
+	private static boolean convertToUpperCase = true;
 
     private static SimpleFeatureSource countryFeatureSource;
     private static SimpleFeatureSource regionFeatureSource;
@@ -49,6 +62,10 @@ public class ShapeFileGenerator {
 
     private static final Map<String, String> subregionNameToSubregionCode = new HashMap<String, String>();
     private static final Map<String, String> subregionCodeToSubregionName = new HashMap<String, String>();
+
+    // map of French regions to remove from the shp file. these regions are French terittories the other side of the world and would cause the
+    // FR.shp file to try and generate a rectangle over the whole world rather than just france
+    private static final Map<String, String> frenchRegionsOutOfEurope = new HashMap<String, String>();
 
     private static final Map<String, List<Region>> subregionsByContinents = new HashMap<String, List<Region>>();
     private static final Map<String, List<Region>> countriesByContinents = new HashMap<String, List<Region>>();
@@ -65,9 +82,24 @@ public class ShapeFileGenerator {
     private static SimpleFeatureType featureType = null;
     static {
         attributesToCopy.add("the_geom");
-        attributesToCopy.add("iso_a2");
-        attributesToCopy.add("name");
-        attributesToCopy.add("type");
+        attributesToCopy.add(UCase("iso_a2"));
+        attributesToCopy.add(UCase("name"));
+        attributesToCopy.add(UCase("type"));
+        // added additional attributes to include in the shp file so that we could (if we want to) use the output shp file as input to GeoJSONGenerator
+        attributesToCopy.add(UCase( "continent") );
+        attributesToCopy.add(UCase( "subregion") );
+
+    }
+
+    /**
+     * List of French regions to not include when creating the French SHP file
+     */
+    static {
+    	frenchRegionsOutOfEurope.put( "FRA-1442", "Martinique" );
+    	frenchRegionsOutOfEurope.put( "FRA-2000", "Guyane française" );
+    	frenchRegionsOutOfEurope.put( "FRA-4601", "La Réunion" );
+    	frenchRegionsOutOfEurope.put( "FRA-4602", "Mayotte" );
+    	frenchRegionsOutOfEurope.put( "FRA-4603", "Guadeloupe" );
     }
 
     static {
@@ -108,6 +140,9 @@ public class ShapeFileGenerator {
 
     public static void main(String[] args) throws IOException {
 
+    	// make sure the output folders already exist before running the process
+    	makeSubFolders();
+
         initShapeFileDataSources();
         featureType = createModifiedFeatureType();
         loadCountries();
@@ -117,6 +152,21 @@ public class ShapeFileGenerator {
 
         // generate GEOJson Files
         generateShapeFiles();
+    }
+
+    /**
+     * Generates all the output folders required when running the process
+     *
+     */
+    private static void makeSubFolders( ) {
+    	MakeFolder m = new MakeFolder( OUTPUT_PATH );
+    	m.makeSubFolder( "country" );
+    	m.makeSubFolder( "country/500" );
+    	m.makeSubFolder( "country/1000" );
+    	m.makeSubFolder( "country/5000" );
+    	m.makeSubFolder( "country/10000" );
+    	m.makeSubFolder( "country/50000" );
+    	m.makeSubFolder( "country/more" );
     }
 
     private static void initShapeFileDataSources() throws IOException
@@ -477,18 +527,27 @@ public class ShapeFileGenerator {
             while(iterator.hasNext()) {
                 SimpleFeature country = iterator.next();
 
-                String continentName = country.getAttribute("continent").toString();
+                String continentName = country.getAttribute(UCase("continent")).toString();
                 String continentCode = continentNameToContinentCode.get(continentName);
                 continentCodeToContinentName.put(continentCode, continentName);
 
-                String subregionName = country.getAttribute("subregion").toString();
+                String subregionName = country.getAttribute(UCase("subregion")).toString();
                 String subregionCode = subregionNameToSubregionCode.get(subregionName);
                 subregionCodeToSubregionName.put(subregionCode, subregionName);
 
-                String name = country.getAttribute("name").toString();
-                String code = country.getAttribute("iso_a2").toString();
+                String name = country.getAttribute(UCase("name")).toString();
+                String code = country.getAttribute(UCase("iso_a2")).toString();
 
-                validateGeometry((Geometry) country.getDefaultGeometry(), country.getAttribute("iso_a2").toString());
+                validateGeometry((Geometry) country.getDefaultGeometry(), country.getAttribute(UCase("iso_a2")).toString());
+
+                /**
+                 * In the latest shp file FR has code -99 we need to switch this to FR
+                 */
+              	if (name.compareTo("France")==0 && (code.compareTo("-99")==0)) {
+              		// force the code to be FR for some unknown reason its coming back as -99 and messing up
+              		code = "FR";
+              	}
+
 
                 if (continentCode != null) {
                     // I don't care if it is already in the map since i just overwrite
@@ -544,10 +603,24 @@ public class ShapeFileGenerator {
                     region.setGeometry((Geometry) admin1Region.getDefaultGeometry());
                     region.setParentId(countryCode);
 
-                    if (!regionsByCountry.containsKey(countryCode)) {
-                        regionsByCountry.put(countryCode, new ArrayList<Region>());
+                    // in the case of France dont include Soverign countries the other side of the world
+                    // as it will really mess up the size of the SHP file
+                    boolean addRegion = true;
+                    if ("FR".compareTo(countryCode)==0) {
+                    	// some French regions are over the other side of the world - we dont want to see them when drilling into France
+                    	if ( frenchRegionsOutOfEurope.containsKey(region.getCode()) ) {
+                    		addRegion = false;
+                    	}
+                        System.out.println("French region [" + region.getCode() + "], name [" + name + "], addRegion [" + addRegion + "]");
                     }
-                    regionsByCountry.get(countryCode).add(region);
+
+                    if (addRegion) {
+	                    if (!regionsByCountry.containsKey(countryCode)) {
+	                        regionsByCountry.put(countryCode, new ArrayList<Region>());
+	                    }
+	                    regionsByCountry.get(countryCode).add(region);
+                    }
+
                 }
             }
         } finally {
@@ -558,23 +631,61 @@ public class ShapeFileGenerator {
     private static SimpleFeature createSimpleFeature(Region region)
     {
         SimpleFeatureBuilder builder = new SimpleFeatureBuilder(featureType);
-        builder.set("iso_a2", region.getCode());
-        builder.set("type", region.getType().toString() );
-        builder.set("name", region.getName());
+        builder.set(UCase("iso_a2"), region.getCode());
+        builder.set(UCase("type"), region.getType().toString() );
+        builder.set(UCase("name"), region.getName());
         builder.set("the_geom", region.getGeometry());
+
+        // so that we can input the shp file into GeoJSONGenerator (should we want to)
+        // addd two additional fields
+        String continentCode = region.getContinentCode();
+        String continentName = continentCodeToContinentName.get(continentCode);
+        builder.set(UCase("continent"), continentName);
+        String subregionName = getSubregionNameForCountryCode( region.getCountryCode() );
+        builder.set(UCase("subregion"), subregionName);
+
 
         SimpleFeature newFeature = builder.buildFeature(region.getCode());
 
         return newFeature;
     }
 
+    /**
+     * calculates the subRegionName for this country Code
+     * @param countryCode
+     * @return
+     */
+    private static String getSubregionNameForCountryCode( String countryCode ) {
+        for (String subregionCode: countriesBySubregions.keySet()) {
+            List<Region> countriesForSubregion = countriesBySubregions.get(subregionCode);
+            if (countriesForSubregion != null && countriesForSubregion.size() > 0) {
+
+            	for ( Region r : countriesForSubregion) {
+            		String c = r.getCountryCode();
+            		if (c.compareTo(countryCode)==0) {
+            			String subregionName = subregionCodeToSubregionName.get(subregionCode);
+            			return subregionName;
+            		}
+            	}
+            }
+        }
+        return "";
+    }
     private static SimpleFeature createSimpleClippedFeature(Region region, com.vividsolutions.jts.geom.Envelope ...envelopes)
     {
 
         SimpleFeatureBuilder builder = new SimpleFeatureBuilder(featureType);
-        builder.set("iso_a2", region.getCode());
-        builder.set("type", region.getType().toString() );
-        builder.set("name", region.getName());
+        builder.set(UCase("iso_a2"), region.getCode());
+        builder.set(UCase("type"), region.getType().toString() );
+        builder.set(UCase("name"), region.getName());
+
+        // so that we can input the shp file into GeoJSONGenerator (should we want to)
+        // addd two additional fields
+        String continentCode = region.getContinentCode();
+        String continentName = continentCodeToContinentName.get(continentCode);
+        builder.set(UCase("continent"), continentName);
+        String subregionName = getSubregionNameForCountryCode( region.getCountryCode() );
+        builder.set(UCase("subregion"), subregionName);
 
         GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
 
@@ -711,4 +822,21 @@ public class ShapeFileGenerator {
         }
         return polygons;
     }
+
+    /**
+     * The original shp files downloaded from naturalearthdata.com had fields in lower case
+     * however they are now in upper case.  Use this method to control the expected case based on the convertToUpperCase flag set at the top of the class
+     * @param s
+     * @return
+     */
+    private static String UCase( String s ) {
+
+    	if (convertToUpperCase) {
+    		return s.toUpperCase();
+    	}
+    	return s;
+
+    }
+
+
 }
