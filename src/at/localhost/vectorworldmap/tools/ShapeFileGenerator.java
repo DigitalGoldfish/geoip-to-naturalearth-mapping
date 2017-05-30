@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,6 +17,7 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.FactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -27,6 +29,7 @@ import at.localhost.vectorworldmap.util.Region.RegionType;
 import at.localhost.vectorworldmap.util.SHPFileUtils;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
@@ -43,14 +46,32 @@ public class ShapeFileGenerator {
 //    private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "resources/naturalearth/v20/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp";
 //    private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v30/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces_maxmind1386079801077.shp";
 //    private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v30/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces_maxmind.shp";
+//    private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v30/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp";
+
+
+//    private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "C:/Jakob/geojsongenerator/resources/naturalearth/v20/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp";
+//  private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v30/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces_maxmind1386079801077.shp";
+//  private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v30/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces_maxmind.shp";
+//  private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "C:/Jakob/geojsongenerator/resources/naturalearth/v30/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp";
+
 
     // Paul changed to ...
 	private static final String NATURAL_EARTH_ADMIN_0_BOUNDARIES_V2 = "C:/Node/Data/shp/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp";
-	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "C:/Node/Data/shp/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp";
+//	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "C:/Node/Data/shp/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp";
+
+	// this shape file has the larger French regions
+	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v20/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces_shp.shp";
+
+//	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/20170524/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp";
+
 
 	// old instances of the shp files had attributes in lower case
 	// Flag to allow us to run either as new format or old format
 	private static boolean convertToUpperCase = true;
+//    private static List<Geometry> BRE = new ArrayList<Geometry>();;			// Brittany
+//    private static Region breRegion = null;
+    private static Map<String, Region> regionMap = new HashMap< String, Region>();
+    private static Map<String, Region> regionQueue = new HashMap< String, Region>();
 
     private static SimpleFeatureSource countryFeatureSource;
     private static SimpleFeatureSource regionFeatureSource;
@@ -66,6 +87,8 @@ public class ShapeFileGenerator {
     // map of French regions to remove from the shp file. these regions are French terittories the other side of the world and would cause the
     // FR.shp file to try and generate a rectangle over the whole world rather than just france
     private static final Map<String, String> frenchRegionsOutOfEurope = new HashMap<String, String>();
+    private static final Map<String, String> regionsToMerge = new HashMap<String, String>();
+
 
     private static final Map<String, List<Region>> subregionsByContinents = new HashMap<String, List<Region>>();
     private static final Map<String, List<Region>> countriesByContinents = new HashMap<String, List<Region>>();
@@ -86,8 +109,8 @@ public class ShapeFileGenerator {
         attributesToCopy.add(UCase("name"));
         attributesToCopy.add(UCase("type"));
         // added additional attributes to include in the shp file so that we could (if we want to) use the output shp file as input to GeoJSONGenerator
-        attributesToCopy.add(UCase( "continent") );
-        attributesToCopy.add(UCase( "subregion") );
+//        attributesToCopy.add(UCase( "continent") );
+//        attributesToCopy.add(UCase( "subregion") );
 
     }
 
@@ -101,6 +124,148 @@ public class ShapeFileGenerator {
     	frenchRegionsOutOfEurope.put( "FRA-4602", "Mayotte" );
     	frenchRegionsOutOfEurope.put( "FRA-4603", "Guadeloupe" );
     }
+
+    // List of French regions for merging when using the ne_10m_admin_1_states_provinces_shp.shp *** V20 **** shape file
+    // IE private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v20/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces_shp.shp";
+    static {
+    	// region code, countrycode hyphen new name of the combined region
+    	// so you could combine regions in different countries as we key on the counry code
+    	regionsToMerge.put( "FRA-2670", "FR@FR-ARA@Auvergne-Rhone-Alpes");		// FRA-2670 = Auvergne in France, Auvergne will be the new name of the combined region
+    	regionsToMerge.put( "FRA-1265", "FR@FR-ARA@Auvergne-Rhone-Alpes");		// FRA-1265 = Rhône-Alpes
+
+    	regionsToMerge.put( "FRA-2669", "FR@FR-OCC@Occitanie");		// [FRA-2669], name [Midi-Pyrénées]
+    	regionsToMerge.put( "FRA-2668", "FR@FR-OCC@Occitanie");		//[FRA-2668], name [Languedoc-Roussillon]
+
+    	regionsToMerge.put( "FRA-2665", "FR@FR-NAQ@Nouvelle-Aquitaine");		//[FRA-2665], name [Aquitaine]
+    	regionsToMerge.put( "FRA-2663", "FR@FR-NAQ@Nouvelle-Aquitaine");		//[FRA-2663], name [Poitou-Charentes]
+    	regionsToMerge.put( "FRA-2681", "FR@FR-NAQ@Nouvelle-Aquitaine");		//[FRA-2681], name [Limousin]
+
+    	regionsToMerge.put( "FRA-2661", "FR@FR-NOR@Normandy");		//[FRA-2661], name [Basse-Normandie]
+    	regionsToMerge.put( "FRA-2673", "FR@FR-NOR@Normandy");		//[FRA-2673], name [Haute-Normandie]
+
+    	regionsToMerge.put( "FRA-2683", "FR@FR-HDF@Hautes-de-France");		//[FRA-2683], name [Nord-Pas-de-Calais]
+    	regionsToMerge.put( "FRA-2684", "FR@FR-HDF@Hautes-de-France");		//[FRA-2684], name [Picardie]
+
+
+    	regionsToMerge.put( "FRA-2682", "FR@FR-GES@Grand Est");		//[FRA-2682], name [Champagne-Ardenne]
+    	regionsToMerge.put( "FRA-2687", "FR@FR-GES@Grand Est");		//[FRA-2687], name [Lorraine]
+    	regionsToMerge.put( "FRA-2686", "FR@FR-GES@Grand Est");		//[FRA-2686], name [Alsace]
+
+    	regionsToMerge.put( "FRA-2671", "FR@FR-BFC@Bourgogne-Franche-Comte");		//[FRA-2671], name [Bourgogne]
+    	regionsToMerge.put( "FRA-2685", "FR@FR-BFC@Bourgogne-Franche-Comte");		//[FRA-2685], name [Franche-Comté]
+
+    	regionsToMerge.put( "FRA-2662", "FR@FR-BRE@Bretagne");		//[FRA-2662], name [Bretagne]
+    	regionsToMerge.put( "FRA-2664", "FR@FR-PDL@Pays de la Loire");		//[FRA-2664], name [Pays de la Loire]
+    	regionsToMerge.put( "FRA-2667", "FR@FR-PAC@Provence-Alpes-Côte-d'Azur");		//    	[FRA-2667], name [Provence-Alpes-Côte-d'Azur]
+    	regionsToMerge.put( "FRA-2672", "FR@FR-CVL@Centre Val de Loire");		//[FRA-2672], name [Centre]
+    	regionsToMerge.put( "FRA-2666", "FR@FR-COR@Corse");		//[FRA-2666], name [Corse]
+    	regionsToMerge.put( "FRA-2680", "FR@FR-IDF@Île-de-France");		//[FRA-2680], name [Île-de-France],
+    }
+
+
+    // region codes using V30 file
+    //
+    static {
+    	regionsToMerge.put( "FRA-5262", "FR@FR-ARA@Auvergne-Rhone-Alpes"); // Ain
+    	regionsToMerge.put( "FRA-5263", "FR@FR-HDF@Hautes-de-France"); // Aisne
+    	regionsToMerge.put( "FRA-5264", "FR@FR-ARA@Auvergne-Rhone-Alpes"); // Allier
+    	regionsToMerge.put( "FRA-5265", "FR@FR-PAC@Provence-Alpes-Côte-d'Azur"); // Alpes-de-Haute-Provence
+    	regionsToMerge.put( "FRA-5266", "FR@FR-PAC@Provence-Alpes-Côte-d'Azur"); // Alpes-Maritimes
+    	regionsToMerge.put( "FRA-5267", "FR@FR-ARA@Auvergne-Rhone-Alpes"); // Ardeche
+    	regionsToMerge.put( "FRA-5268", "FR@FR-GES@Grand Est"); // Ardennes
+    	regionsToMerge.put( "FRA-5269", "FR@FR-OCC@Occitanie"); // Ariege
+    	regionsToMerge.put( "FRA-5270", "FR@FR-GES@Grand Est"); // Aube
+    	regionsToMerge.put( "FRA-5271", "FR@FR-OCC@Occitanie"); // Aude
+    	regionsToMerge.put( "FRA-5272", "FR@FR-OCC@Occitanie"); // Aveyron
+    	regionsToMerge.put( "FRA-5273", "FR@FR-GES@Grand Est"); // Bas-Rhin
+    	regionsToMerge.put( "FRA-5274", "FR@FR-PAC@Provence-Alpes-Côte-d'Azur"); // Bouches-du-Rhone
+    	regionsToMerge.put( "FRA-5275", "FR@FR-NOR@Normandy"); // Calvados
+    	regionsToMerge.put( "FRA-5276", "FR@FR-ARA@Auvergne-Rhone-Alpes"); // Cantal
+    	regionsToMerge.put( "FRA-5277", "FR@FR-NAQ@Nouvelle-Aquitaine"); // Charente
+    	regionsToMerge.put( "FRA-5278", "FR@FR-NAQ@Nouvelle-Aquitaine"); // Charente-Maritime
+    	regionsToMerge.put( "FRA-5279", "FR@FR-CVL@Centre Val de Loire"); // Cher
+    	regionsToMerge.put( "FRA-5280", "FR@FR-NAQ@Nouvelle-Aquitaine"); // Correze
+    	regionsToMerge.put( "FRA-5281", "FR@FR-COR@Corse"); // Corse-du-Sud
+    	regionsToMerge.put( "FRA-5282", "FR@FR-BFC@Bourgogne-Franche-Comte"); // Cote-d'Or
+    	regionsToMerge.put( "FRA-5283", "FR@FR-BRE@Bretagne"); // CÃ´tes-d'Armor
+    	regionsToMerge.put( "FRA-5284", "FR@FR-NAQ@Nouvelle-Aquitaine"); // Creuse
+    	regionsToMerge.put( "FRA-5285", "FR@FR-NAQ@Nouvelle-Aquitaine"); // Deux-Sevres
+    	regionsToMerge.put( "FRA-5286", "FR@FR-NAQ@Nouvelle-Aquitaine"); // Dordogne
+    	regionsToMerge.put( "FRA-5287", "FR@FR-BFC@Bourgogne-Franche-Comte"); // Doubs
+    	regionsToMerge.put( "FRA-5288", "FR@FR-ARA@Auvergne-Rhone-Alpes"); // Drome
+    	regionsToMerge.put( "FRA-5289", "FR@FR-IDF@Île-de-France"); // Essonne
+    	regionsToMerge.put( "FRA-5290", "FR@FR-NOR@Normandy"); // Eure
+    	regionsToMerge.put( "FRA-5291", "FR@FR-CVL@Centre Val de Loire"); // Eure-et-Loir
+    	regionsToMerge.put( "FRA-5292", "FR@FR-BRE@Bretagne"); // FinistÃ¨re
+    	regionsToMerge.put( "FRA-5293", "FR@FR-OCC@Occitanie"); // Gard
+    	regionsToMerge.put( "FRA-5294", "FR@FR-OCC@Occitanie"); // Gers
+    	regionsToMerge.put( "FRA-5295", "FR@FR-NAQ@Nouvelle-Aquitaine"); // Gironde
+    	regionsToMerge.put( "FRA-5296", "FR@FR-GES@Grand Est"); // Haute-Rhin
+    	regionsToMerge.put( "FRA-5297", "FR@FR-COR@Corse"); // Haute-Corse
+    	regionsToMerge.put( "FRA-5298", "FR@FR-OCC@Occitanie"); // Haute-Garonne
+    	regionsToMerge.put( "FRA-5299", "FR@FR-ARA@Auvergne-Rhone-Alpes"); // Haute-Loire
+    	regionsToMerge.put( "FRA-5300", "FR@FR-GES@Grand Est"); // Haute-Marne
+    	regionsToMerge.put( "FRA-5301", "FR@FR-BFC@Bourgogne-Franche-Comte"); // Haute-Saone
+    	regionsToMerge.put( "FRA-5302", "FR@FR-ARA@Auvergne-Rhone-Alpes"); // Haute-Savoie
+    	regionsToMerge.put( "FRA-5303", "FR@FR-NAQ@Nouvelle-Aquitaine"); // Haute-Vienne
+    	regionsToMerge.put( "FRA-5304", "FR@FR-PAC@Provence-Alpes-Côte-d'Azur"); // Hautes-Alpes
+    	regionsToMerge.put( "FRA-5305", "FR@FR-OCC@Occitanie"); // Hautes-Pyrenees
+    	regionsToMerge.put( "FRA-5306", "FR@FR-IDF@Île-de-France"); // Hauts-de-Seine
+    	regionsToMerge.put( "FRA-5307", "FR@FR-OCC@Occitanie"); // Herault
+    	regionsToMerge.put( "FRA-5308", "FR@FR-BRE@Bretagne"); // Ille-et-Vilaine
+    	regionsToMerge.put( "FRA-5309", "FR@FR-CVL@Centre Val de Loire"); // Indre
+    	regionsToMerge.put( "FRA-5310", "FR@FR-CVL@Centre Val de Loire"); // Indre-et-Loire
+    	regionsToMerge.put( "FRA-5311", "FR@FR-ARA@Auvergne-Rhone-Alpes"); // Isere
+    	regionsToMerge.put( "FRA-5312", "FR@FR-BFC@Bourgogne-Franche-Comte"); // Jura
+    	regionsToMerge.put( "FRA-5313", "FR@FR-NAQ@Nouvelle-Aquitaine"); // Landes
+    	regionsToMerge.put( "FRA-5314", "FR@FR-CVL@Centre Val de Loire"); // Loir-et-Cher
+    	regionsToMerge.put( "FRA-5315", "FR@FR-ARA@Auvergne-Rhone-Alpes"); // Loire
+    	regionsToMerge.put( "FRA-5316", "FR@FR-PDL@Pays de la Loire"); // Loire-Atlantique
+    	regionsToMerge.put( "FRA-5317", "FR@FR-CVL@Centre Val de Loire"); // Loiret
+    	regionsToMerge.put( "FRA-5318", "FR@FR-OCC@Occitanie"); // Lot
+    	regionsToMerge.put( "FRA-5319", "FR@FR-NAQ@Nouvelle-Aquitaine"); // Lot-et-Garonne
+    	regionsToMerge.put( "FRA-5320", "FR@FR-OCC@Occitanie"); // Lozere
+    	regionsToMerge.put( "FRA-5321", "FR@FR-PDL@Pays de la Loire"); // Maine-et-Loire
+    	regionsToMerge.put( "FRA-5322", "FR@FR-NOR@Normandy"); // Manche
+    	regionsToMerge.put( "FRA-5323", "FR@FR-GES@Grand Est"); // Marne
+    	regionsToMerge.put( "FRA-5324", "FR@FR-PDL@Pays de la Loire"); // Mayenne
+    	regionsToMerge.put( "FRA-5325", "FR@FR-GES@Grand Est"); // Meurhe-et-Moselle
+    	regionsToMerge.put( "FRA-5326", "FR@FR-GES@Grand Est"); // Meuse
+    	regionsToMerge.put( "FRA-5327", "FR@FR-BRE@Bretagne"); // Morbihan
+    	regionsToMerge.put( "FRA-5328", "FR@FR-GES@Grand Est"); // Moselle
+    	regionsToMerge.put( "FRA-5329", "FR@FR-BFC@Bourgogne-Franche-Comte"); // Nievre
+    	regionsToMerge.put( "FRA-5330", "FR@FR-HDF@Hautes-de-France"); // Nord
+    	regionsToMerge.put( "FRA-5331", "FR@FR-HDF@Hautes-de-France"); // Oise
+    	regionsToMerge.put( "FRA-5332", "FR@FR-NOR@Normandy"); // Orne
+    	regionsToMerge.put( "FRA-5333", "FR@FR-IDF@Île-de-France"); // Paris
+    	regionsToMerge.put( "FRA-5334", "FR@FR-HDF@Hautes-de-France"); // Pas-de-Calais
+    	regionsToMerge.put( "FRA-5335", "FR@FR-ARA@Auvergne-Rhone-Alpes"); // Puy-de-Dome
+    	regionsToMerge.put( "FRA-5336", "FR@FR-NAQ@Nouvelle-Aquitaine"); // Pyrenees-Atlantiques
+    	regionsToMerge.put( "FRA-5337", "FR@FR-OCC@Occitanie"); // Pyrenees-Orientales
+    	regionsToMerge.put( "FRA-5338", "FR@FR-ARA@Auvergne-Rhone-Alpes"); // Rhone
+    	regionsToMerge.put( "FRA-5339", "FR@FR-BFC@Bourgogne-Franche-Comte"); // Saone-et-Loire
+    	regionsToMerge.put( "FRA-5340", "FR@FR-PDL@Pays de la Loire"); // Sarthe
+    	regionsToMerge.put( "FRA-5341", "FR@FR-ARA@Auvergne-Rhone-Alpes"); // Savoie
+    	regionsToMerge.put( "FRA-5342", "FR@FR-IDF@Île-de-France"); // Seien-et-Marne
+    	regionsToMerge.put( "FRA-5343", "FR@FR-NOR@Normandy"); // Seine-Maritime
+    	regionsToMerge.put( "FRA-5344", "FR@FR-IDF@Île-de-France"); // Seine-Saint-Denis
+    	regionsToMerge.put( "FRA-5345", "FR@FR-HDF@Hautes-de-France"); // Somme
+    	regionsToMerge.put( "FRA-5346", "FR@FR-OCC@Occitanie"); // Tarn
+    	regionsToMerge.put( "FRA-5347", "FR@FR-OCC@Occitanie"); // Tarn-et-Garonne
+    	regionsToMerge.put( "FRA-5348", "FR@FR-BFC@Bourgogne-Franche-Comte"); // Territoire de Belfort
+    	regionsToMerge.put( "FRA-5349", "FR@FR-IDF@Île-de-France"); // Val-d'Oise
+    	regionsToMerge.put( "FRA-5350", "FR@FR-IDF@Île-de-France"); // Val-de-Marne
+    	regionsToMerge.put( "FRA-5351", "FR@FR-PAC@Provence-Alpes-Côte-d'Azur"); // Var
+    	regionsToMerge.put( "FRA-5352", "FR@FR-PAC@Provence-Alpes-Côte-d'Azur"); // Vaucluse
+    	regionsToMerge.put( "FRA-5353", "FR@FR-PDL@Pays de la Loire"); // Vendee
+    	regionsToMerge.put( "FRA-5354", "FR@FR-NAQ@Nouvelle-Aquitaine"); // Vienne
+    	regionsToMerge.put( "FRA-5355", "FR@FR-GES@Grand Est"); // Vosges
+    	regionsToMerge.put( "FRA-5356", "FR@FR-BFC@Bourgogne-Franche-Comte"); // Yonne
+    	regionsToMerge.put( "FRA-5357", "FR@FR-IDF@Île-de-France"); // Yvelines
+    }
+
+
+
 
     static {
         continentNameToContinentCode.put("Africa", "CONT_AF");
@@ -152,6 +317,8 @@ public class ShapeFileGenerator {
 
         // generate GEOJson Files
         generateShapeFiles();
+
+        System.out.println("Done");
     }
 
     /**
@@ -340,7 +507,7 @@ public class ShapeFileGenerator {
         } */
 
         for (String countryCode: regionsByCountry.keySet()) {
-            System.out.println("Processing country " + countryCode);
+//            System.out.println("Processing country " + countryCode);
 
             List<Region> regionsForCountry = regionsByCountry.get(countryCode);
             DefaultFeatureCollection features = createFeatures(regionsForCountry);
@@ -390,7 +557,7 @@ public class ShapeFileGenerator {
             if ("NZ".equals(countryCode)) {
             	features = createFeatures(regionsForCountry, boundsArray);
             } else {
-            	features = createFeatures(regionsForCountry, bounds);
+           		features = createFeatures(regionsForCountry, bounds);
             }
 
             if (!countryCode.equals("US")) {
@@ -402,12 +569,12 @@ public class ShapeFileGenerator {
                         if ("NZ".equals(countryCode)) {
                         	for (ReferencedEnvelope envelope: boundsArray) {
 	                        	if (envelope.intersects(country.getFeature().getBounds())) {
-	 	                            System.out.println("Country " + country.getName() + " is close to " + countryCode);
+//	                        		System.out.println("Country " + country.getName() + " is close to " + countryCode);
 	 	                            SimpleFeature clippedFeature = createSimpleClippedFeature(country, bounds);
 	 	                            Geometry geometry = (Geometry) clippedFeature.getDefaultGeometry();
 
 	 	                            if (geometry.getNumPoints() > 0) {
-	 	                                System.out.println("Adding " + countryCode2 + " because it is close and it is a valid shape");
+//	 	                                System.out.println("Adding " + countryCode2 + " because it is close and it is a valid shape");
 	 	                                features.add(clippedFeature);
 	 	                            } else {
 	 	                                System.out.println("Ignoring " + countryCode2 + " because it's area is 0");
@@ -416,12 +583,12 @@ public class ShapeFileGenerator {
                         	}
                         } else {
 	                        if (bounds.intersects(country.getFeature().getBounds())) {
-	                            System.out.println("Country " + country.getName() + " is close to " + countryCode);
+//	                            System.out.println("Country " + country.getName() + " is close to " + countryCode);
 	                            SimpleFeature clippedFeature = createSimpleClippedFeature(country, bounds);
 	                            Geometry geometry = (Geometry) clippedFeature.getDefaultGeometry();
 
 	                            if (geometry.getNumPoints() > 0) {
-	                                System.out.println("Adding " + countryCode2 + " because it is close and it is a valid shape");
+//	                                System.out.println("Adding " + countryCode2 + " because it is close and it is a valid shape");
 	                                features.add(clippedFeature);
 	                            } else {
 	                                System.out.println("Ignoring " + countryCode2 + " because it's area is 0");
@@ -611,8 +778,17 @@ public class ShapeFileGenerator {
                     	if ( frenchRegionsOutOfEurope.containsKey(region.getCode()) ) {
                     		addRegion = false;
                     	}
-                        System.out.println("French region [" + region.getCode() + "], name [" + name + "], addRegion [" + addRegion + "]");
+//                        System.out.println("French region [" + region.getCode() + "], name [" + name + "], addRegion [" + addRegion + "]");
+
+                        //regionsToMerge.put( "FRA-2670", "FR@R-ARA@Auvergne-Rhone-Alpes");
+                        System.out.println( "regionsToMerge.put( \"" + region.getCode() + "\"" + ", \"FR@FR-@\"); // " + name  );
                     }
+
+                	if (regionsToMerge.containsKey( region.getCode( ))) {
+                		mergeRegion( region, true );
+                		addRegion = false;			// save to the end
+                	}
+
 
                     if (addRegion) {
 	                    if (!regionsByCountry.containsKey(countryCode)) {
@@ -623,10 +799,122 @@ public class ShapeFileGenerator {
 
                 }
             }
+        } catch ( Exception e ) {
+        	System.out.println( e );
         } finally {
             iterator.close();
         }
+
+        Iterator it ;
+
+        // process any remaining regions that need merging that didn't have a region next to them at the time they were pulled from the list
+        it = regionQueue.entrySet().iterator();
+        while ( it.hasNext()  ){
+        	Map.Entry pair = (Map.Entry)it.next();
+            String regionCodeToMerge = (String)pair.getKey();
+            Region region = (Region)pair.getValue();
+
+            // false means if this fails dont go adding to the regionQueue once more - we give up at this point
+            if (mergeRegion( region, false) ) {
+            	System.out.println("Unable to merge region [" + region.getCode() + " " + region.getName());
+            }
+        }
+
+
+
+        // add all the regions that were merged now all merging has been completed
+        it = regionMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+
+            String regionName = (String)pair.getKey();
+            Region region = (Region)pair.getValue();
+
+            // get the country from the region name
+            String arr[] = regionName.split("@");
+            String thisCountry = arr[0];
+            String thisRegionCode = arr[1];
+            String thisRegionName = arr[2];
+            region.setCode(thisRegionCode);
+            region.setName(thisRegionName);
+
+            if (!regionsByCountry.containsKey(thisCountry)){
+            	regionsByCountry.put(thisCountry,  new ArrayList<Region>());
+            }
+            regionsByCountry.get(thisCountry).add(region);
+        }
+
+
+
+
+
     }
+
+
+    static boolean mergeRegion( Region region, Boolean addToQueueOnFailure ) {
+
+    	boolean regionMerged = true;
+		String regionCodeToMerge = regionsToMerge.get( region.getCode() );
+
+		if (regionMap.containsKey(regionCodeToMerge)) {
+			Region thisRegion = regionMap.get(regionCodeToMerge);
+			Geometry g = thisRegion.getGeometry();
+
+    		ArrayList<Geometry> lst = new ArrayList<Geometry>();
+    		lst.add(g);
+    		lst.add(region.getGeometry());
+			Geometry mergedGeometry = combineIntoOneGeometry( thisRegion, region );
+			// if a null came back then this region is trying to connect to another region when they are not next to each other
+			// if this is the case we add the region to a list for them to be done again at the end of the processing
+			if (mergedGeometry !=null) {
+    			thisRegion.setGeometry(mergedGeometry);
+    			regionMap.put( regionCodeToMerge, thisRegion);
+			} else {
+				if (addToQueueOnFailure) {
+	                System.out.println( "Adding [" + thisRegion.getCode() + "] to queue or regions to do at the end " );
+					regionQueue.put(thisRegion.getCode(), region);
+				} else {
+					// this probably happens when the region still can't find an adjacent region
+					// investigate where this region is and which regions are near it - have they been processed yet?
+	                System.out.println( "Failed to merge [" + thisRegion.getCode() + "] name " + thisRegion.getName());
+				}
+				regionMerged = false;
+			}
+		}
+		else {
+			regionMap.put( regionCodeToMerge,  region);
+		}
+       	return regionMerged;
+
+    }
+
+    // combines the geometry of one region with that of a second and returns the combined Geometry object
+    // In the case of Gironde this causes a exception when using the more grandular shp file C:/Node/Data/shp/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp
+    static Geometry combineIntoOneGeometry( Region r1, Region r2) {
+		ArrayList<Geometry> lst = new ArrayList<Geometry>();
+
+		Geometry g1 = r1.getGeometry();
+		Geometry g2 = r2.getGeometry();
+		lst.add(g1);
+		lst.add(g2);
+    	try {
+	    	GeometryFactory factory = FactoryFinder.getGeometryFactory( null );
+
+	        // note the following geometry collection may be invalid (say with overlapping polygons)
+	        GeometryCollection geometryCollection1 =(GeometryCollection) factory.buildGeometry( lst  );
+	        return geometryCollection1.union();
+
+    	} catch (Exception e ) {
+        	System.out.println( e );
+        	System.out.println( e.getMessage() );
+        	return null;
+    	}
+
+
+    }
+
+
+
 
     private static SimpleFeature createSimpleFeature(Region region)
     {
@@ -636,14 +924,13 @@ public class ShapeFileGenerator {
         builder.set(UCase("name"), region.getName());
         builder.set("the_geom", region.getGeometry());
 
-        // so that we can input the shp file into GeoJSONGenerator (should we want to)
-        // addd two additional fields
-        String continentCode = region.getContinentCode();
-        String continentName = continentCodeToContinentName.get(continentCode);
-        builder.set(UCase("continent"), continentName);
-        String subregionName = getSubregionNameForCountryCode( region.getCountryCode() );
-        builder.set(UCase("subregion"), subregionName);
-
+//        // so that we can input the shp file into GeoJSONGenerator (should we want to)
+//        // addd two additional fields
+//        String continentCode = region.getContinentCode();
+//        String continentName = continentCodeToContinentName.get(continentCode);
+//        builder.set(UCase("continent"), continentName);
+//        String subregionName = getSubregionNameForCountryCode( region.getCountryCode() );
+//        builder.set(UCase("subregion"), subregionName);
 
         SimpleFeature newFeature = builder.buildFeature(region.getCode());
 
@@ -674,18 +961,20 @@ public class ShapeFileGenerator {
     private static SimpleFeature createSimpleClippedFeature(Region region, com.vividsolutions.jts.geom.Envelope ...envelopes)
     {
 
+
         SimpleFeatureBuilder builder = new SimpleFeatureBuilder(featureType);
         builder.set(UCase("iso_a2"), region.getCode());
         builder.set(UCase("type"), region.getType().toString() );
         builder.set(UCase("name"), region.getName());
 
-        // so that we can input the shp file into GeoJSONGenerator (should we want to)
-        // addd two additional fields
-        String continentCode = region.getContinentCode();
-        String continentName = continentCodeToContinentName.get(continentCode);
-        builder.set(UCase("continent"), continentName);
-        String subregionName = getSubregionNameForCountryCode( region.getCountryCode() );
-        builder.set(UCase("subregion"), subregionName);
+
+//        // so that we can input the shp file into GeoJSONGenerator (should we want to)
+//        // addd two additional fields
+//        String continentCode = region.getContinentCode();
+//        String continentName = continentCodeToContinentName.get(continentCode);
+//        builder.set(UCase("continent"), continentName);
+//        String subregionName = getSubregionNameForCountryCode( region.getCountryCode() );
+//        builder.set(UCase("subregion"), subregionName);
 
         GeometryFactory factory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
 
@@ -714,11 +1003,15 @@ public class ShapeFileGenerator {
             builder.set("the_geom", factory.createMultiPolygon(polygons));
         } else {
         	Geometry envelopeGeometry = factory.toGeometry(envelopes[0]);
-	        Geometry intersection = envelopeGeometry.intersection(region.getGeometry());
-	        if (intersection.getNumPoints() <= 0) {
-	            return null;
-	        }
-	        builder.set("the_geom", intersection);
+        	try {
+	            Geometry intersection = envelopeGeometry.intersection(region.getGeometry());
+		        if (intersection.getNumPoints() <= 0) {
+		            return null;
+		        }
+		        builder.set("the_geom", intersection);
+        	} catch (Exception e ) {
+        		System.out.println( "Exception Country " + region.getCode() + " " +   e.getMessage());
+        	}
         }
 
         SimpleFeature newFeature = builder.buildFeature(region.getCode());
