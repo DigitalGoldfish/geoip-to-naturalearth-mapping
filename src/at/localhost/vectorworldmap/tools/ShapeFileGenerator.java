@@ -60,9 +60,9 @@ public class ShapeFileGenerator {
 //	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "C:/Node/Data/shp/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp";
 
 	// this shape file has the larger French regions
-	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v20/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces_shp.shp";
+//	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/naturalearth/v20/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces_shp.shp";
 
-//	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/20170524/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp";
+	private static final String NATURAL_EARTH_ADMIN_1_BOUNDARIES_V3 = "resources/20170524/ne_10m_admin_1_states_provinces/ne_10m_admin_1_states_provinces.shp";
 
 
 	// old instances of the shp files had attributes in lower case
@@ -86,7 +86,7 @@ public class ShapeFileGenerator {
 
     // map of French regions to remove from the shp file. these regions are French terittories the other side of the world and would cause the
     // FR.shp file to try and generate a rectangle over the whole world rather than just france
-    private static final Map<String, String> frenchRegionsOutOfEurope = new HashMap<String, String>();
+    private static final Map<String, String> regionsToIgnore = new HashMap<String, String>();
     private static final Map<String, String> regionsToMerge = new HashMap<String, String>();
 
 
@@ -118,11 +118,15 @@ public class ShapeFileGenerator {
      * List of French regions to not include when creating the French SHP file
      */
     static {
-    	frenchRegionsOutOfEurope.put( "FRA-1442", "Martinique" );
-    	frenchRegionsOutOfEurope.put( "FRA-2000", "Guyane française" );
-    	frenchRegionsOutOfEurope.put( "FRA-4601", "La Réunion" );
-    	frenchRegionsOutOfEurope.put( "FRA-4602", "Mayotte" );
-    	frenchRegionsOutOfEurope.put( "FRA-4603", "Guadeloupe" );
+    	// French regions that are outside Europe
+    	regionsToIgnore.put( "FRA-1442", "Martinique" );
+    	regionsToIgnore.put( "FRA-2000", "Guyane française" );
+    	regionsToIgnore.put( "FRA-4601", "La Réunion" );
+    	regionsToIgnore.put( "FRA-4602", "Mayotte" );
+    	regionsToIgnore.put( "FRA-4603", "Guadeloupe" );
+
+    	// Irish region that doesn't makes sense!
+    	regionsToIgnore.put( "IRL+99?", "???" );
     }
 
     // List of French regions for merging when using the ne_10m_admin_1_states_provinces_shp.shp *** V20 **** shape file
@@ -264,6 +268,47 @@ public class ShapeFileGenerator {
     	regionsToMerge.put( "FRA-5357", "FR@FR-IDF@�le-de-France"); // Yvelines
     }
 
+
+    static {
+    	// Irelands provinces
+    	regionsToMerge.put( "IRL-5569", "IE@IE-M@Munster"); // Cork
+    	regionsToMerge.put( "IRL-5570", "IE@IE-M@Munster"); // Limerick
+    	regionsToMerge.put( "IRL-78", "IE@IE-M@Munster"); // Cork			??
+    	regionsToMerge.put( "IRL-726", "IE@IE-M@Munster"); // Limerick
+    	regionsToMerge.put( "IRL-725", "IE@IE-M@Munster"); // Kerry
+    	regionsToMerge.put( "IRL-724", "IE@IE-M@Munster"); // North Tipperary
+    	regionsToMerge.put( "IRL-5572", "IE@IE-M@Munster"); // South Tipperary
+    	regionsToMerge.put( "IRL-1444", "IE@IE-M@Munster"); // Waterford
+    	regionsToMerge.put( "IRL-5571", "IE@IE-M@Munster"); // Waterford
+    	regionsToMerge.put( "IRL-76", "IE@IE-M@Munster"); // Clare
+
+    	regionsToMerge.put( "IRL-731", "IE@IE-L@Leinster"); // Longford
+    	regionsToMerge.put( "IRL-717", "IE@IE-L@Leinster"); // Westmeath
+    	regionsToMerge.put( "IRL-716", "IE@IE-L@Leinster"); // Offaly
+    	regionsToMerge.put( "IRL-5576", "IE@IE-L@Leinster"); // Dún Laoghaire�??Rathdown  (Dun Laoghaire-Rathdown)
+    	regionsToMerge.put( "IRL-715", "IE@IE-L@Leinster"); // Meath
+    	regionsToMerge.put( "IRL-712", "IE@IE-L@Leinster"); // Louth
+    	regionsToMerge.put( "IRL-5573", "IE@IE-L@Leinster"); // South Dublin
+    	regionsToMerge.put( "IRL-5575", "IE@IE-L@Leinster"); // Dublin
+    	regionsToMerge.put( "IRL-5574", "IE@IE-L@Leinster"); // Fingal					(near Dublin)
+    	regionsToMerge.put( "IRL-721", "IE@IE-L@Leinster"); // Kildare
+    	regionsToMerge.put( "IRL-723", "IE@IE-L@Leinster"); // Laoighis
+    	regionsToMerge.put( "IRL-722", "IE@IE-L@Leinster"); // Kilkenny
+    	regionsToMerge.put( "IRL-77", "IE@IE-L@Leinster"); // Carlow
+    	regionsToMerge.put( "IRL-719", "IE@IE-L@Leinster"); // Wicklow
+    	regionsToMerge.put( "IRL-718", "IE@IE-L@Leinster"); // Wexford
+
+	   	regionsToMerge.put( "IRL-714", "IE@IE-C@Connaght"); // Mayo
+    	regionsToMerge.put( "IRL-728", "IE@IE-C@Connaght"); // Sligo
+    	regionsToMerge.put( "IRL-727", "IE@IE-C@Connaght"); // Roscommon
+    	regionsToMerge.put( "IRL-730", "IE@IE-C@Connaght"); // Leitrim
+    	regionsToMerge.put( "IRL-713", "IE@IE-C@Connaght"); // Galway
+    	regionsToMerge.put( "IRL-5568", "IE@IE-C@Connaght"); // Galway
+
+    	regionsToMerge.put( "IRL-79", "IE@IE-U@Ulster"); // Cavan
+    	regionsToMerge.put( "IRL-729", "IE@IE-U@Ulster"); // Donegal
+    	regionsToMerge.put( "IRL-3412", "IE@IE-U@Ulster"); // Monaghan
+    }
 
 
 
@@ -773,15 +818,13 @@ public class ShapeFileGenerator {
                     // in the case of France dont include Soverign countries the other side of the world
                     // as it will really mess up the size of the SHP file
                     boolean addRegion = true;
-                    if ("FR".compareTo(countryCode)==0) {
+
+                    if ("FR".compareTo(countryCode)==0  || "IE".compareTo(countryCode) ==0 ) {
                     	// some French regions are over the other side of the world - we dont want to see them when drilling into France
-                    	if ( frenchRegionsOutOfEurope.containsKey(region.getCode()) ) {
+                    	if ( regionsToIgnore.containsKey(region.getCode()) ) {
                     		addRegion = false;
                     	}
-//                        System.out.println("French region [" + region.getCode() + "], name [" + name + "], addRegion [" + addRegion + "]");
-
-                        //regionsToMerge.put( "FRA-2670", "FR@R-ARA@Auvergne-Rhone-Alpes");
-                        System.out.println( "regionsToMerge.put( \"" + region.getCode() + "\"" + ", \"FR@FR-@\"); // " + name  );
+                        System.out.println( "regionsToMerge.put( \"" + region.getCode() + "\"" + ", \"" + countryCode + "@" + countryCode + "-@\"); // " + name  );
                     }
 
                 	if (regionsToMerge.containsKey( region.getCode( ))) {
