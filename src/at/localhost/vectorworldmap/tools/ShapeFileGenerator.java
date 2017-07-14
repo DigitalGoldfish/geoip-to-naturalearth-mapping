@@ -114,6 +114,93 @@ public class ShapeFileGenerator {
 
     }
 
+
+    // Regions to merge for spain
+    // The original topo json file needed the following changes
+    // Castila y Leon - add Avila and Segovia, remove Alava
+    // Castilla-La Macha - remove Avila
+    // Madrid - remove Segvia
+    // Pais Vasco (Basque) - add Alava
+    //
+    // Existing ES.json uses ISO Codes
+    //   ISO   FIPS    Names
+    //   AN    51      Andalucia
+    //   AR    52      Aragon
+    //   AS    34      Asturias
+    //   CB    39      Cantabria
+    //   CT    9       Catalonia
+    //   CL    55      Castilla y Leon
+    //   CM    54      Castilla-La Mancha
+    //   CN    53      Canarias
+    //   EX    57      Extremadura
+    //   GA    58      Galacia
+    //   IB    07      Islas Baleares
+    //   MC    31      Murcia
+    //   MD    29      Madrid
+    //   NC    32      Navarra
+    //   PV    59      Pais Vasco, Euskal Autonomia Erkidegoa
+    //   RI    27      La Rioja
+    //   VC    60      Comunidad Valenciana
+    //
+    //
+    static {
+	    regionsToMerge.put( "ESP-5801", "ES@ES-PV@Pais Vasco"); 				// Ãlava
+	    regionsToMerge.put( "ESP-5802", "ES@ES-CM@Castilla-La Mancha"); 		// Albacete
+	    regionsToMerge.put( "ESP-5803", "ES@ES-VC@Comunidad Valenciana"); 		// Alicante
+	    regionsToMerge.put( "ESP-5804", "ES@ES-AN@Andalucia"); 					// Almeria
+	    regionsToMerge.put( "ESP-5805", "ES@ES-AS@Asturias"); 					// Asturias
+	    regionsToMerge.put( "ESP-5806", "ES@ES-CL@Castilla y Leon");			// Ãvila
+	    regionsToMerge.put( "ESP-5807", "ES@ES-EX@Extremadura"); 				// Badajoz
+	    regionsToMerge.put( "ESP-5808", "ES@ES-IB@Islas Baleares"); 			// Baleares
+	    regionsToMerge.put( "ESP-5809", "ES@ES-CT@Catalonia"); 					// Barcelona
+	    regionsToMerge.put( "ESP-5810", "ES@ES-CL@Castilla y Leon"); 			// Burgos
+	    regionsToMerge.put( "ESP-5811", "ES@ES-EX@Extremadura"); 				// Caceres
+	    regionsToMerge.put( "ESP-5812", "ES@ES-AN@Andalucia"); 					// Cadiz
+	    regionsToMerge.put( "ESP-5813", "ES@ES-CB@Cantabria"); 					// Cantabria
+	    regionsToMerge.put( "ESP-5814", "ES@ES-VC@Comunidad Valenciana"); 		// Castellon
+	    regionsToMerge.put( "ESP-5816", "ES@ES-CM@Castilla-La Mancha"); 		// Ciudad Real
+	    regionsToMerge.put( "ESP-5817", "ES@ES-AN@Andalucia"); 					// Cordoba
+	    regionsToMerge.put( "ESP-5818", "ES@ES-CM@Castilla-La Mancha"); 		// Cuenca
+	    regionsToMerge.put( "ESP-5820", "ES@ES-CT@Catalonia"); 					// Gerona
+	    regionsToMerge.put( "ESP-5821", "ES@ES-AN@Andalucia"); 					// Granada
+	    regionsToMerge.put( "ESP-5822", "ES@ES-CM@Castilla-La Mancha");			// Guadalajara
+	    regionsToMerge.put( "ESP-5823", "ES@ES-PV@Pais Vasco"); 				// Gipuzkoa     AKA Gupuzcoa
+	    regionsToMerge.put( "ESP-5824", "ES@ES-AN@Andalucia"); 					// Huelva
+	    regionsToMerge.put( "ESP-5825", "ES@ES-AR@Aragon"); 					// Huesca
+	    regionsToMerge.put( "ESP-5826", "ES@ES-AN@Andalucia"); 					// Jaen
+	    regionsToMerge.put( "ESP-5827", "ES@ES-GA@Galacia"); 					// La Coruna
+	    regionsToMerge.put( "ESP-5828", "ES@ES-RI@La Rioja"); 					// La Rioja
+	    regionsToMerge.put( "ESP-5829", "ES@ES-CN@Canarias"); 					// Las Palmas
+	    regionsToMerge.put( "ESP-5830", "ES@ES-CL@Castilla y Leon"); 			// Leon
+	    regionsToMerge.put( "ESP-5831", "ES@ES-CT@Catalonia"); 					// Lerida
+	    regionsToMerge.put( "ESP-5832", "ES@ES-GA@Galacia"); 					// Lugo
+	    regionsToMerge.put( "ESP-5833", "ES@ES-MD@Madrid"); 					// Madrid
+	    regionsToMerge.put( "ESP-5834", "ES@ES-AN@Andalucia"); 					// Malaga
+	    regionsToMerge.put( "ESP-5836", "ES@ES-MC@Murcia"); 					// Murcia
+	    regionsToMerge.put( "ESP-5837", "ES@ES-NC@Navarra"); 					// Navarra
+	    regionsToMerge.put( "ESP-5838", "ES@ES-GA@Galacia"); 					// Orense
+	    regionsToMerge.put( "ESP-5839", "ES@ES-CL@Castilla y Leon"); 			// Palencia
+	    regionsToMerge.put( "ESP-5840", "ES@ES-GA@Galacia"); 					// Pontevedra
+	    regionsToMerge.put( "ESP-5841", "ES@ES-CL@Castilla y Leon"); 			// Salamanca
+	    regionsToMerge.put( "ESP-5843", "ES@ES-CL@Castilla y Leon"); 			// Segovia
+	    regionsToMerge.put( "ESP-5844", "ES@ES-AN@Andalucia"); 					// Sevilla
+	    regionsToMerge.put( "ESP-5845", "ES@ES-CL@Castilla y Leon"); 			// Soria
+	    regionsToMerge.put( "ESP-5846", "ES@ES-CT@Catalonia"); 					// Tarragona
+	    regionsToMerge.put( "ESP-5847", "ES@ES-AR@Aragon"); 					// Teruel
+	    regionsToMerge.put( "ESP-5848", "ES@ES-CM@Castilla-La Mancha"); 		// Toledo
+	    regionsToMerge.put( "ESP-5849", "ES@ES-VC@Comunidad Valenciana");		// Valencia
+	    regionsToMerge.put( "ESP-5850", "ES@ES-CL@Castilla y Leon"); 			// Valladolid
+	    regionsToMerge.put( "ESP-5851", "ES@ES-PV@Pais Vasco"); 				// Bizkaia			AKA Biscay, Vizcaya
+	    regionsToMerge.put( "ESP-5852", "ES@ES-CL@Castilla y Leon"); 			// Zamora
+	    regionsToMerge.put( "ESP-5853", "ES@ES-AR@Aragon"); 					// Zaragoza
+
+// Not processed
+//	    regionsToMerge.put( "ESP-5815", "ES@ES-@"); // Ceuta
+//	    regionsToMerge.put( "ESP-5835", "ES@ES-@"); // Melilla
+//	    regionsToMerge.put( "ESP-5842", "ES@ES-@"); // Santa Cruz de Tenerife
+
+    }
+
     /**
      * List of French regions to not include when creating the French SHP file
      */
@@ -127,6 +214,13 @@ public class ShapeFileGenerator {
 
     	// Irish region that doesn't makes sense!
     	regionsToIgnore.put( "IRL+99?", "???" );
+
+    	// Spanish region that doesnt make sence
+    	regionsToIgnore.put( "ESP+99?", 	"???"); //
+    	regionsToIgnore.put( "ESP-5815", 	"???"); // Ceuta
+    	regionsToIgnore.put( "ESP-5835", 	"???"); // Melilla
+    	regionsToIgnore.put( "ESP-5842", 	"???"); // Santa Cruz de Tenerife
+
     }
 
     // List of French regions for merging when using the ne_10m_admin_1_states_provinces_shp.shp *** V20 **** shape file
@@ -819,12 +913,12 @@ public class ShapeFileGenerator {
                     // as it will really mess up the size of the SHP file
                     boolean addRegion = true;
 
-                    if ("FR".compareTo(countryCode)==0  || "IE".compareTo(countryCode) ==0 ) {
+                    if ("ES".compareTo(countryCode)==0 || "FR".compareTo(countryCode)==0  || "IE".compareTo(countryCode) ==0 ) {
                     	// some French regions are over the other side of the world - we dont want to see them when drilling into France
                     	if ( regionsToIgnore.containsKey(region.getCode()) ) {
                     		addRegion = false;
                     	}
-                        System.out.println( "regionsToMerge.put( \"" + region.getCode() + "\"" + ", \"" + countryCode + "@" + countryCode + "-@\"); // " + name  );
+         //               System.out.println( "regionsToMerge.put( \"" + region.getCode() + "\"" + ", \"" + countryCode + "@" + countryCode + "-@\"); // " + name  );
                     }
 
                 	if (regionsToMerge.containsKey( region.getCode( ))) {
